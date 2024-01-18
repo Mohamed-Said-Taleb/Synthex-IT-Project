@@ -3,6 +3,17 @@ server:
 spring:
   application:
     name: api-gateway
+  jetty:
+    threads:
+      max: '1000'
+  tomcat:
+    threads:
+      max: '1000'
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8181/realms/synthexIt-microservice-realm
 eureka:
   client:
     serviceUrl:
@@ -10,3 +21,9 @@ eureka:
 logging:
   pattern:
     level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}] %m%n"
+# Actuator Prometheus Endpoint
+management:
+    endpoints:
+      web:
+        exposure:
+          include: prometheus
