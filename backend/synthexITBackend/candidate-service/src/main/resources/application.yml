@@ -1,0 +1,20 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: candidate-service
+# PostgreSQL Data Source Configuration
+  datasource:
+        url: jdbc:postgresql://localhost:5432/candidateDataBase
+        username: myuser
+        password: mypassword
+  jpa:
+        hibernate:
+          ddl-auto: create
+  sql:
+        init:
+          continue-on-error: true
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
