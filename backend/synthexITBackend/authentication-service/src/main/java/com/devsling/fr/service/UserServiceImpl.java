@@ -1,13 +1,12 @@
 package com.devsling.fr.service;
 
 
-import com.devsling.fr.entities.Role;
-import com.devsling.fr.entities.User;
+import com.devsling.fr.entities.AppUser;
+import com.devsling.fr.entities.AppRole;
 import com.devsling.fr.repository.RoleRepository;
 import com.devsling.fr.repository.UserRepository;
-import com.devsling.fr.security.request.SignUpForm;
+import com.devsling.fr.dto.SignupForm;
 import com.devsling.fr.tools.ErrorModel;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,7 +16,6 @@ import java.util.Collections;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class  UserServiceImpl implements UserService {
 
 
@@ -26,42 +24,47 @@ public class  UserServiceImpl implements UserService {
    private final  BCryptPasswordEncoder bCryptPasswordEncoder;
    private final UserServiceHelper userServiceHelper;
 
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, BCryptPasswordEncoder bCryptPasswordEncoder, UserServiceHelper userServiceHelper) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.userServiceHelper = userServiceHelper;
+    }
 
     @Override
-    public User findUserByUsername(String username) {
+    public AppUser findUserByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 
     @Override
-    public List<User> getAllUser() {
+    public List<AppUser> getAllUser() {
         return userRepository.findAll();
     }
 
 
     @Override
-    public Role addRole(Role roleName) {
-        return roleRepository.save(roleName);
+    public void addRole(AppRole appRoleName) {
+        roleRepository.save(appRoleName);
     }
 
 
     @Override
-    public User addRoleToUser(String userName, String roleName) {
-        User usr = userRepository.findByUsername(userName);
-        Role rol = roleRepository.findByRole(roleName);
-        usr.getRoles().add(rol);
-        return usr;
+    public void addRoleToUser(String userName, String roleName) {
+        AppUser usr = userRepository.findByUsername(userName);
+        AppRole rol = roleRepository.findByRole(roleName);
+        usr.getAppRoles().add(rol);
     }
 
 
 
     @Override
-    public User getUserById(Long id) {
+    public AppUser getUserById(Long id) {
         return userRepository.findUserByIdUser(id);
     }
 
     @Override
-    public User UpdateUser(User user) {
-        return userRepository.save(user);
+    public AppUser UpdateUser(AppUser appUser) {
+        return userRepository.save(appUser);
     }
 
     @Override
@@ -70,7 +73,7 @@ public class  UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<?> signup(SignUpForm signUpForm) {
+    public ResponseEntity<?> signup(SignupForm signUpForm) {
         if(userRepository.existsByUsername(signUpForm.getUsername())){
             return new ResponseEntity<>(new ErrorModel("Username is used "), HttpStatus.BAD_REQUEST);
         }
@@ -93,18 +96,23 @@ public class  UserServiceImpl implements UserService {
         if(userRepository.existsByEmail(signUpForm.getEmail())){
             return new ResponseEntity<>(new ErrorModel("email is used"),HttpStatus.BAD_REQUEST);
         }
-        User userBd = User.builder()
+        AppUser appUserBd = AppUser.builder()
                 .username(signUpForm.getUsername())
                 .email(signUpForm.getEmail())
                 .password(bCryptPasswordEncoder.encode(signUpForm.getPassword()))
                 .gender(signUpForm.getGender())
                 .enabled(signUpForm.getEnabled())
-                .roles(Collections.singletonList(roleRepository.findByRole(signUpForm.getRole_Name())))
+                .appRoles(Collections.singletonList(roleRepository.findByRole(signUpForm.getRole_Name())))
                 .build();
 
-        userRepository.save(userBd);
+        userRepository.save(appUserBd);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @Override
+    public void saveUser(AppUser appUser) {
+        userRepository.save(appUser);
     }
 
 

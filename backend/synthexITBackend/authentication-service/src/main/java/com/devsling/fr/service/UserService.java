@@ -1,28 +1,29 @@
 package com.devsling.fr.service;
 
 
-import com.devsling.fr.entities.Role;
-import com.devsling.fr.entities.User;
-import com.devsling.fr.security.request.SignUpForm;
+import com.devsling.fr.entities.AppUser;
+import com.devsling.fr.entities.AppRole;
+import com.devsling.fr.dto.SignupForm;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
 public interface UserService {
-    User findUserByUsername(String userName);
+    AppUser findUserByUsername(String userName);
 
-    List<User> getAllUser();
+    List<AppUser> getAllUser();
 
-    Role addRole(Role role);
+    void addRole(AppRole appRole);
 
-    User addRoleToUser(String username, String roleName);
-    User getUserById(Long id);
+    void addRoleToUser(String username, String roleName);
+    AppUser getUserById(Long id);
 
-    User UpdateUser(User user);
+    AppUser UpdateUser(AppUser appUser);
 
     void DeleteUserById(Long id);
 
-    ResponseEntity<?> signup(SignUpForm signUpForm);
+    ResponseEntity<?> signup(SignupForm signUpForm);
 
+    void saveUser(AppUser appUser);
 
 }
