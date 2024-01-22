@@ -1,17 +1,17 @@
 package com.devsling.fr.repository;
 
 
-import com.devsling.fr.entities.User;
+import com.devsling.fr.entities.AppUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
-    User findByUsername(String username);
+public interface UserRepository extends JpaRepository<AppUser, Long> {
+    AppUser findByUsername(String username);
 
-    User findByEmail(String email);
+    AppUser findByEmail(String email);
 
-    User findUserByIdUser(Long id);
+    AppUser findUserByIdUser(Long id);
 
     boolean existsByEmail(String email);
 

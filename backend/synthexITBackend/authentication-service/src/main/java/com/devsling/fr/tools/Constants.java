@@ -5,6 +5,6 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Constants {
-    public static final String AUTHORISATION = "Authorisation";
+    public static final String AUTHORISATION = "auth";
 
 }

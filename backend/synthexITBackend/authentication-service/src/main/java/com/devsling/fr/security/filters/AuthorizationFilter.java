@@ -1,4 +1,4 @@
-package com.devsling.fr.security;
+package com.devsling.fr.security.filters;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;

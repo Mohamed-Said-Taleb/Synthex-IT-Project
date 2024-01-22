@@ -1,4 +1,4 @@
-package com.devsling.fr.security.request;
+package com.devsling.fr.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SignUpForm {
+public class SignupForm {
 
     private String username;
     private String password;
@@ -17,6 +17,4 @@ public class SignUpForm {
     private String email;
     private String gender;
     private String role_Name;
-
-
 }

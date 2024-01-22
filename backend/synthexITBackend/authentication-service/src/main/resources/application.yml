@@ -5,12 +5,12 @@ spring:
     name: authentication-service
 # PostgreSQL Data Source Configuration
   datasource:
-        url: jdbc:postgresql://localhost:5432/authenticationDataBase
+        url: jdbc:postgresql://localhost:5432/mydatabase
         username: myuser
         password: mypassword
   jpa:
         hibernate:
-          ddl-auto: create
+          ddl-auto: update
   sql:
         init:
           continue-on-error: true

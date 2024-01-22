@@ -1,8 +1,8 @@
-package com.devsling.fr.security;
+package com.devsling.fr.security.filters;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.devsling.fr.entities.User;
+import com.devsling.fr.entities.AppUser;
 import com.devsling.fr.tools.SecParam;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -11,7 +11,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -28,16 +27,17 @@ import static com.devsling.fr.tools.Constants.AUTHORISATION;
 
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private final AuthenticationManager authenticationManager;
+    private AuthenticationManager authenticationManager;
+
     public AuthenticationFilter(AuthenticationManager authenticationManager) {
         super();
         this.authenticationManager = authenticationManager;
     }
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        User user = null;
+        AppUser appUser = null;
         try {
-            user = new ObjectMapper().readValue(request.getInputStream(), User.class);
+            appUser = new ObjectMapper().readValue(request.getInputStream(), AppUser.class);
         } catch (JsonParseException e) {
             e.printStackTrace();
         } catch (JsonMappingException e) {
@@ -45,12 +45,13 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+        return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(appUser.getUsername(), appUser.getPassword()));
     }
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        org.springframework.security.core.userdetails.User SpringUser = (org.springframework.security.core.userdetails.User) authResult.getPrincipal();
+            org.springframework.security.core.userdetails.User SpringUser =
+                    (org.springframework.security.core.userdetails.User) authResult.getPrincipal();
 
         List<String> roles = new ArrayList<>();
         SpringUser.getAuthorities().forEach(au -> {
@@ -60,7 +61,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         String Jwt = JWT
                 .create()
                 .withSubject(SpringUser.getUsername())
-                .withArrayClaim("roles", roles.toArray(new String[0]))
+                .withArrayClaim("roles", roles.toArray(new String[roles.size()]))
                 .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
                 .sign(Algorithm.HMAC256(SecParam.Secret));
         response.addHeader(AUTHORISATION, Jwt);

@@ -55,7 +55,7 @@ public class JwtUtils {
         return (username.equals(UserDetails.getUsername()) && !isTokenExpired(token));
     }
 
-    public static String generateToken(String username) {
+    public  String generateToken(String username) {
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, username);
 
