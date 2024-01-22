@@ -1,4 +1,4 @@
-package com.devsling.fr.security.response;
+package com.devsling.fr.dto;
 
 import org.springframework.security.core.GrantedAuthority;
 

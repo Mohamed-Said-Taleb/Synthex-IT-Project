@@ -20,7 +20,7 @@ import java.io.Serializable;
 @Data
 @Table(name = "roles")
 @Builder
-public class Role implements Serializable {
+public class AppRole implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idRole;

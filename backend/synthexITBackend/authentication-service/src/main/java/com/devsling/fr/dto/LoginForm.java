@@ -1,4 +1,4 @@
-package com.devsling.fr.security.request;
+package com.devsling.fr.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

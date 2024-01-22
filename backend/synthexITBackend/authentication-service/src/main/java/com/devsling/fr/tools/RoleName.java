@@ -1,4 +1,4 @@
-package com.devsling.fr.authEnum;
+package com.devsling.fr.tools;
 
 public enum RoleName {
     CANDIDATE,
