@@ -1,4 +1,4 @@
-package com.devsling.fr.service;
+package com.devsling.fr.service.helper;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
