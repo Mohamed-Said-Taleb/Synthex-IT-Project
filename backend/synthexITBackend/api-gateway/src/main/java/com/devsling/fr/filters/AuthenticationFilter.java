@@ -1,4 +1,4 @@
-package com.devsling.fr.config;
+package com.devsling.fr.filters;
 
 
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -36,7 +36,7 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                     authHeader = authHeader.substring(7);
                 }
                 try {
-//                    //REST call to AUTH service with WebClient
+                   //REST call to AUTH service with WebClient
                     String finalAuthHeader = authHeader;
                     authWebClient.get()
                             .uri(uriBuilder -> uriBuilder
