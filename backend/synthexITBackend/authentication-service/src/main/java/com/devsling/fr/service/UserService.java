@@ -22,7 +22,6 @@ public interface UserService {
 
     void DeleteUserById(Long id);
 
-    ResponseEntity<?> signup(SignupForm signUpForm);
 
     void saveUser(AppUser appUser);
 
