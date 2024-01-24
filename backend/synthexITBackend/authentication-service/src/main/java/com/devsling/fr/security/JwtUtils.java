@@ -1,14 +1,19 @@
 package com.devsling.fr.security;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -21,18 +26,26 @@ public class JwtUtils {
     }
 
 
-    public String generateToken(String userName) {
+    public String generateToken(String userName,Authentication authResult) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, userName);
+        return createToken(claims, userName,authResult);
     }
 
-    private String createToken(Map<String, Object> claims, String userName) {
-        return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(userName)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30))
-                .signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
+    private String createToken(Map<String, Object> claims, String userName, Authentication authResult) {
+        org.springframework.security.core.userdetails.User SpringUser = (org.springframework.security.core.userdetails.User) authResult.getPrincipal();
+
+        List<String> roles = new ArrayList<>();
+        SpringUser.getAuthorities().forEach(au -> {
+            roles.add(au.getAuthority());
+
+        });
+            return Jwts.builder()
+                    .setClaims(claims)
+                    .setSubject(userName)
+                    .claim("roles", roles)  // Add roles as a custom claim
+                    .setIssuedAt(new Date(System.currentTimeMillis()))
+                    .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30))
+                    .signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
     }
 
     private Key getSignKey() {

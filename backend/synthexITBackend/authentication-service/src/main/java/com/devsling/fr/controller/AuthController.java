@@ -2,10 +2,12 @@ package com.devsling.fr.controller;
 
 import com.devsling.fr.dto.LoginForm;
 import com.devsling.fr.dto.SignupForm;
+import com.devsling.fr.security.MyUserDetailsService;
 import com.devsling.fr.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +20,7 @@ public class AuthController {
 
 
     private final AuthService authService;
+
 
     public AuthController(AuthService authService) {
         this.authService = authService;
