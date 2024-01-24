@@ -10,7 +10,7 @@ spring:
         password: mypassword
   jpa:
         hibernate:
-          ddl-auto: create
+          ddl-auto: update
   sql:
         init:
           continue-on-error: true

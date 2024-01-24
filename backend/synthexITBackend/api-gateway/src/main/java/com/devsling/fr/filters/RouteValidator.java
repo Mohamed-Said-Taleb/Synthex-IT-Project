@@ -1,4 +1,4 @@
-package com.devsling.fr.config;
+package com.devsling.fr.filters;
 
 
 import org.springframework.http.server.reactive.ServerHttpRequest;
