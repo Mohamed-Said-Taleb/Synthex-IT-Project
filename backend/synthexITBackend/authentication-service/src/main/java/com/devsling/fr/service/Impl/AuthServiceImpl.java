@@ -6,6 +6,7 @@ import com.devsling.fr.entities.AppUser;
 import com.devsling.fr.repository.RoleRepository;
 import com.devsling.fr.repository.UserRepository;
 import com.devsling.fr.security.JwtUtils;
+import com.devsling.fr.security.MyUserDetailsService;
 import com.devsling.fr.service.AuthService;
 import com.devsling.fr.service.helper.UserServiceHelper;
 import com.devsling.fr.tools.ErrorModel;
@@ -15,6 +16,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -88,7 +90,7 @@ public class AuthServiceImpl implements AuthService {
         try {
             Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginForm.getUsername(), loginForm.getPassword()));
             if (authenticate.isAuthenticated()) {
-                return jwtUtils.generateToken(loginForm.getUsername());
+                return jwtUtils.generateToken(loginForm.getUsername(),authenticate);
             } else {
                 throw new RuntimeException("Invalid access");
             }
