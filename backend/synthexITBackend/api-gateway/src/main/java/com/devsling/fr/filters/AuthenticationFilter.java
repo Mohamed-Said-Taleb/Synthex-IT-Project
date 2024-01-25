@@ -36,9 +36,8 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
             if (validator.isSecured.test(exchange.getRequest())) {
                 // Check if the header contains the token
                 if (!exchange.getRequest().getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
-                    throw new AuthException(HttpStatus.UNAUTHORIZED.value(), "Authorization Header Missing", AuthErrorMessage.builder()
-                            .error("Authorization Header Missing")
-                            .build());
+                    throw new RuntimeException("missing authorization header");
+
                 }
 
                 String authHeader = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION).get(0);
@@ -47,8 +46,18 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                 }
 
                 try {
-                    // Validate the token using your JWTUtil or authentication service
+                    // REST call to AUTH service with WebClient
+                    String finalAuthHeader = authHeader;
+                 /*  String response = authWebClient.get()
+                            .uri(uriBuilder -> uriBuilder
+                                    .path("/auth/validate")
+                                    .queryParam("token", finalAuthHeader)
+                                    .build())
+                            .retrieve()
+                            .bodyToMono(String.class)
+                            .block(); // Blocking call to get the response*/
                     jwtUtil.validateToken(authHeader);
+
 
                 } catch (AuthException e) {
                     // You can rethrow AuthException if needed, or handle it appropriately
@@ -56,9 +65,8 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
 
                 } catch (Exception e) {
                     // Handle other exceptions, or rethrow them as AuthException
-                    throw new AuthException(HttpStatus.UNAUTHORIZED.value(), "Invalid Access", AuthErrorMessage.builder()
-                            .error("Invalid Access")
-                            .build());
+                    System.out.println("invalid access...!");
+                    throw new RuntimeException("un authorized access to application");
                 }
             }
             return chain.filter(exchange);
