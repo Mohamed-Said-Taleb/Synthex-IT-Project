@@ -43,12 +43,12 @@ management:
     endpoints:
       web:
         exposure:
-          include: prometheus
+          include: "*"
 backend:
   maxConnections: 600
   acquireTimeout: 1000
   auth:
-    baseUrl: https://localhost:8083
+    baseUrl: lb://AUTHENTICATION-SERVICE
     connectTimeout: 10000
     readTimeout: 10000
     writeTimeout: 10000
