@@ -1,5 +1,6 @@
 package com.devsling.fr.service.Impl;
 
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.devsling.fr.dto.LoginForm;
 import com.devsling.fr.dto.SignupForm;
 import com.devsling.fr.entities.AppUser;
@@ -10,6 +11,8 @@ import com.devsling.fr.security.MyUserDetailsService;
 import com.devsling.fr.service.AuthService;
 import com.devsling.fr.service.helper.UserServiceHelper;
 import com.devsling.fr.tools.ErrorModel;
+import com.devsling.fr.tools.TokenValidationResponse;
+import io.jsonwebtoken.MalformedJwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -100,12 +103,17 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public String validateToken(String token) {
+    public TokenValidationResponse validateToken(String token) {
         try {
             jwtUtils.validateToken(token);
-            return "Token valid";
+            return new TokenValidationResponse("Token valid");
+        } catch (TokenExpiredException e) {
+            return new TokenValidationResponse("Token expired: " + e.getMessage());
+        } catch (MalformedJwtException e) {
+            return new TokenValidationResponse("Malformed token: " + e.getMessage());
         } catch (Exception e) {
-            return "Invalid token: " + e.getMessage();
+            return new TokenValidationResponse("Invalid token: " + e.getMessage());
         }
     }
+
 }
