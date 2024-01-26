@@ -4,6 +4,7 @@ import com.devsling.fr.dto.LoginForm;
 import com.devsling.fr.dto.SignupForm;
 import com.devsling.fr.security.MyUserDetailsService;
 import com.devsling.fr.service.AuthService;
+import com.devsling.fr.tools.TokenValidationResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/auth")
@@ -41,12 +43,13 @@ public class AuthController {
         }}
 
     @PostMapping("/validate")
-    public ResponseEntity<String> validateToken(@RequestParam("token") String token) {
-        try {
-            String result = authService.validateToken(token);
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
-        }
+    public Mono<TokenValidationResponse> validateToken(@RequestParam("token") String token) {
+        return Mono.fromCallable(() -> {
+                    TokenValidationResponse result = authService.validateToken(token);
+                    return result;
+                })
+                .onErrorResume(Exception.class, e -> {
+                    return Mono.just(new TokenValidationResponse("Invalid token: " + e.getMessage()));
+                });
     }
 }
