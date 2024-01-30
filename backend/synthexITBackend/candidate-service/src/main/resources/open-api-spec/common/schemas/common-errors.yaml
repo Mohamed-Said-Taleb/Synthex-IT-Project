@@ -1,0 +1,37 @@
+CommonServiceError:
+  title: Common service errors
+  properties:
+    code:
+      type: string
+      description: Http error code
+      example: 404
+    sub_code:
+      type: string
+      description: sub-code sent by remote service
+      example: 1176
+    reason:
+      type: string
+      description: Error reeason
+      example: Not found
+    service:
+      type: string
+      description: servicee name
+
+CommonMetadata:
+  title: Common Metadata
+  type: object
+  properties:
+    self:
+      type: string
+
+CommonErrors:
+  title: Common Errors
+  properties:
+    metadata:
+      $ref: '#/CommonMetadata'
+    errors:
+      type: object
+      additionalProperties:
+        type: array
+        items:
+          $ref: '#/CommonServiceError'
