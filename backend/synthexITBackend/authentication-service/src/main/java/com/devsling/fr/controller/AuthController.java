@@ -6,6 +6,7 @@ import com.devsling.fr.security.MyUserDetailsService;
 import com.devsling.fr.service.AuthService;
 import com.devsling.fr.tools.TokenValidationResponse;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,15 +19,13 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
 
     private final AuthService authService;
 
 
-    public AuthController(AuthService authService) {
-        this.authService = authService;
-    }
 
 
     @PostMapping("/register")
@@ -51,5 +50,5 @@ public class AuthController {
                 .onErrorResume(Exception.class, e -> {
                     return Mono.just(new TokenValidationResponse("Invalid token: " + e.getMessage()));
                 });
-    }
-}
+
+}}

@@ -44,3 +44,12 @@ management:
       web:
         exposure:
           include: "*"
+backend:
+  maxConnections: 600
+  acquireTimeout: 1000
+  auth:
+    baseUrl: http://localhost:8083
+    connectTimeout: 10000
+    readTimeout: 10000
+    writeTimeout: 10000
+    responseTimeout: 10000

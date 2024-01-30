@@ -27,6 +27,8 @@ import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+
 @Configuration
 public class WebClientConfiguration {
     @Bean
