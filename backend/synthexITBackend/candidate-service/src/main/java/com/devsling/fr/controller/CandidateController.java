@@ -3,6 +3,7 @@ package com.devsling.fr.controller;
 import com.devsling.fr.model.Candidate;
 import com.devsling.fr.repository.CandidateRepository;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,7 +22,8 @@ public class CandidateController  {
 
 
     @GetMapping("/all")
-    public List<Candidate> getAll(){
-      return   candidateRepository.findAll();
+    public List<Candidate> getAll( @RequestHeader("LoggedUser") String username){
+        System.out.println("LOgged user is" +" " +username);
+        return   candidateRepository.findAll();
     }
 }
