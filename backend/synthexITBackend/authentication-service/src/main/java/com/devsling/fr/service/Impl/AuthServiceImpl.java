@@ -104,16 +104,13 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public TokenValidationResponse validateToken(String token) {
-        try {
-            jwtUtils.validateToken(token);
-            return new TokenValidationResponse("Token valid");
-        } catch (TokenExpiredException e) {
-            return new TokenValidationResponse("Token expired: " + e.getMessage());
-        } catch (MalformedJwtException e) {
-            return new TokenValidationResponse("Malformed token: " + e.getMessage());
-        } catch (Exception e) {
-            return new TokenValidationResponse("Invalid token: " + e.getMessage());
-        }
+
+            if ((jwtUtils.validateToken(token))){
+            return TokenValidationResponse.builder()
+                    .status("Valid").build();
+            }
+            return TokenValidationResponse.builder()
+                    .status("Invalid").build();
     }
 
 }

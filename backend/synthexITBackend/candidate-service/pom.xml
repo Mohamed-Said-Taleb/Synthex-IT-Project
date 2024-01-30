@@ -14,26 +14,120 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+        <!--  <springdoc.openapi.version>2.2.0</springdoc.openapi.version>-->
+           <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+       </properties>
 
-    <dependencies>
-        <dependency>
-                <groupId>org.springframework.cloud</groupId>
-                <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
+       <dependencies>
+           <dependency>
+                   <groupId>org.springframework.cloud</groupId>
+                   <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+           </dependency>
+           <dependency>
+               <groupId>org.springframework.boot</groupId>
+               <artifactId>spring-boot-starter-data-jpa</artifactId>
+           </dependency>
+           <dependency>
+               <groupId>org.postgresql</groupId>
+               <artifactId>postgresql</artifactId>
+               <scope>runtime</scope>
+           </dependency>
+           <dependency>
+               <groupId>org.springframework.boot</groupId>
+               <artifactId>spring-boot-starter-web</artifactId>
+           </dependency>
+           <!--   <dependency>
+                 <groupId>io.swagger</groupId>
+                 <artifactId>swagger-annotations</artifactId>
+                 <version>1.6.3</version>
+             </dependency>
+             <dependency>
+                 <groupId>javax.validation</groupId>
+                 <artifactId>validation-api</artifactId>
+                 <version>2.0.1.Final</version>
+             </dependency>
+             <dependency>
+                 <groupId>org.openapitools</groupId>
+                 <artifactId>jackson-databind-nullable</artifactId>
+                 <version>0.2.1</version>
+             </dependency>
+
+             <dependency>
+                 <groupId>io.springfox</groupId>
+                 <artifactId>springfox-swagger2</artifactId>
+                 <version>3.0.0</version>
+                 <exclusions>
+                     <exclusion>
+                         <groupId>io.swagger.core.v3</groupId>
+                         <artifactId>swagger-annotations</artifactId>
+                     </exclusion>
+                 </exclusions>
+             </dependency>
+             <dependency>
+                 <groupId>io.swagger.core.v3</groupId>
+                 <artifactId>swagger-core-jakarta</artifactId>
+                 <version>2.2.7</version>
+             </dependency>
+
+           <dependency>
+               <groupId>javax.annotation</groupId>
+               <artifactId>javax.annotation-api</artifactId>
+               <version>1.3.2</version>
+           </dependency>
+
+           <dependency>
+               <groupId>io.swagger.core.v3</groupId>
+               <artifactId>swagger-annotations</artifactId>
+               <version>2.2.4</version>
+           </dependency>
+
+           <dependency>
+               <groupId>io.swagger.core.v3</groupId>
+               <artifactId>swagger-core</artifactId>
+               <version>2.2.4</version>
+           </dependency>
+
+           <dependency>
+               <groupId>io.swagger.core.v3</groupId>
+               <artifactId>swagger-models</artifactId>
+               <version>2.2.4</version>
+           </dependency>-->
+
     </dependencies>
-</project>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <!--  <plugin>
+                 <groupId>org.openapitools</groupId>
+                 <artifactId>openapi-generator-maven-plugin</artifactId>
+                 <version>7.0.1</version>
+                 <executions>
+                     <execution>
+                         <goals>
+                             <goal>generate</goal>
+                         </goals>
+                         <configuration>
+                             <inputSpec>${project.basedir}/src/main/resources/open-api-spec/candidate.yml</inputSpec>
+                             <generatorName>spring</generatorName>
+                         </configuration>
+                     </execution>
+                     <execution>
+                         <id>common</id>
+                         <goals>
+                             <goal>generate</goal>
+                         </goals>
+                         <configuration>
+                             <inputSpec>${project.basedir}/src/main/resources/open-api-spec/common/common-1.0.0.yaml</inputSpec>
+                             <generatorName>spring</generatorName>
+                         </configuration>
+                     </execution>
+                 </executions>
+             </plugin> -->
+         </plugins>
+
+     </build>
+ </project>
