@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/candidate")
-public class CandidateController {
+public class CandidateController  {
 
     private final CandidateRepository candidateRepository;
 

@@ -1,0 +1,21 @@
+---
+openapi: 3.0.0
+info:
+  title: BFF Common
+  version: 1.0.0
+tags:
+  - name: Common
+paths:
+
+  /commons_errors:
+    get:
+      tags:
+        - Common
+      operationId: getCommonErrors
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/common-errors.yaml#/CommonErrors'

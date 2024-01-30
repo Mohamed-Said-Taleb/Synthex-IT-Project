@@ -1,0 +1,42 @@
+201:
+  description: 201 Created, creation request is successful, response does not contain the related resource but its URL is returned in the Location header
+202:
+  description: 202 Accepted, request has been accepted for processing, but the processing has not been completed
+204:
+  description: 204 No Content, request is successful and no resource is to be returned
+400:
+  description: Incorrect parameter in the request
+  content:
+    application/json:
+      schema:
+        $ref: '../schemas/common-schemas.yaml#/Errors'
+401:
+  description: Missing authentication in the request
+  content:
+    application/json:
+      schema:
+        $ref: '../schemas/common-schemas.yaml#/Errors'
+403:
+  description: Request for a restricted resource
+  content:
+    application/json:
+      schema:
+        $ref: '../schemas/common-schemas.yaml#/Errors'
+410:
+  description: Resource no more available
+  content:
+    application/json:
+      schema:
+        $ref: '../schemas/common-schemas.yaml#/Errors'
+500:
+  description: Unrecoverable error from the service
+  content:
+    application/json:
+      schema:
+        $ref: '../schemas/common-schemas.yaml#/Errors'
+503:
+  description: Service Unavailable
+  content:
+    application/json:
+      schema:
+        $ref: '../schemas/common-schemas.yaml#/Errors'

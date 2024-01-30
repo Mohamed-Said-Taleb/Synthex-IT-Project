@@ -1,0 +1,58 @@
+---
+openapi: 3.0.0
+info:
+  title: Candidate
+  description: This is the swagger of Candidate ressources
+  version: 1.0.0
+servers:
+  - url: http:localhost:8082
+    description: SwaggerHub API Auto Mocking
+
+tags:
+  - name: Candidate
+    description: Manage any resources
+paths:
+  /candidate:
+    get:
+      tags:
+        - Candidate
+      summary: get all candidates
+      operationId: GetAllCandidate
+
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CandidateFullData'
+        "400":
+          $ref: '../open-api-spec/common/responses/common-responses.yaml#/400'
+        "403":
+          $ref: '../open-api-spec/common/responses/common-responses.yaml#/403'
+        "410":
+          $ref: '../open-api-spec/common/responses/common-responses.yaml#/410'
+        "500":
+          $ref: '../open-api-spec/common/responses/common-responses.yaml#/500'
+        "503":
+          $ref: '../open-api-spec/common/responses/common-responses.yaml#/503'
+components:
+  schemas:
+    Candidate:
+      type: object
+      properties:
+        firstName:
+          type: string
+          description: First name of the Candidate
+        lastName:
+          type: string
+          description: Last name of the Candidate
+    CandidateFullData:
+      allOf:
+        - $ref: '#/components/schemas/Candidate'
+        - type: object
+          properties:
+            candidateId:
+              type: integer
+              description: The ID of the Candidate
+              format: int64
