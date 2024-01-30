@@ -5,7 +5,7 @@ import com.devsling.fr.tools.ValidateTokenResponse;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.server.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
@@ -34,10 +34,12 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
     @Override
     public GatewayFilter apply(Config config) {
         return ((exchange, chain) -> {
+            ServerHttpRequest request =null;
             if (validator.isSecured.test(exchange.getRequest())) {
                 // Check if the header contains the token
                 if (!exchange.getRequest().getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
                     throw new RuntimeException("missing authorization header");
+
                 }
 
                 String authHeader = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION).get(0);
@@ -51,19 +53,22 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                         .retrieve()
                         .bodyToMono(ValidateTokenResponse.class)
                         .flatMap(validateTokenResponse -> {
-                            // Additional processing of the ValidateTokenResponse
                             String status = validateTokenResponse.getStatus();
 
                             if ("Valid".equals(status)) {
                                 // Valid access to candidate
-                                return chain.filter(exchange);
+                                // Add headers to the response before calling chain.filter()
+
+                                ServerHttpRequest serverHttpRequest= exchange.getRequest().mutate()
+                                        .header("LoggedUser", jwtUtil.extractUsername(finalAuthHeader))
+                                        .build();
+                                return chain.filter(exchange.mutate().request(serverHttpRequest).build());
                             } else {
                                 // Invalid access, do not redirect to candidate microservice
                                 return Mono.error(new AuthenticationException("Not Authorized"));
                             }
                         })
                         .onErrorResume(WebClientRequestException.class, e -> {
-                            // Handle WebClientRequestException (e.g., if auth service is unreachable)
                             return Mono.error(new RuntimeException("Error calling auth service", e));
                         });
             }else {
