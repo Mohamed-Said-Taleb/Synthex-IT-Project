@@ -18,16 +18,16 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
 
     private final RouteValidator validator;
 
-    private final WebClient.Builder webClientBuilder;
+    private final WebClient authWebClient;
 
     private final JwtUtil jwtUtil;
 
 
 
-    public AuthenticationFilter(RouteValidator validator, WebClient.Builder webClientBuilder, JwtUtil jwtUtil) {
+    public AuthenticationFilter(RouteValidator validator, WebClient authWebClient, JwtUtil jwtUtil) {
         super(Config.class);
         this.validator = validator;
-        this.webClientBuilder = webClientBuilder;
+        this.authWebClient = authWebClient;
         this.jwtUtil = jwtUtil;
     }
 
@@ -47,7 +47,7 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                     authHeader = authHeader.substring(7);
                 }
                 String finalAuthHeader = authHeader;
-                return webClientBuilder.build().post()
+                return authWebClient.post()
                         .uri("http://localhost:8083/auth/validate",
                                 uriBuilder -> uriBuilder.queryParam("token", finalAuthHeader).build())
                         .retrieve()

@@ -49,7 +49,7 @@ backend:
   acquireTimeout: 1000
   auth:
     baseUrl: http://localhost:8083
-    connectTimeout: 10000
-    readTimeout: 10000
-    writeTimeout: 10000
-    responseTimeout: 10000
+    connectTimeout: 3000
+    readTimeout: 3000
+    writeTimeout: 3000
+    responseTimeout: 3000
