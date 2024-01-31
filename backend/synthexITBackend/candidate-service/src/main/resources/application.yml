@@ -18,3 +18,12 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
+backend:
+  maxConnections: 600
+  acquireTimeout: 1000
+  employer:
+    baseUrl: http://localhost:8081
+    connectTimeout: 3000
+    readTimeout: 3000
+    writeTimeout: 3000
+    responseTimeout: 3000
