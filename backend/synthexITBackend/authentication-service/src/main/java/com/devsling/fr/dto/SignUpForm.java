@@ -10,9 +10,19 @@ import lombok.NoArgsConstructor;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginForm {
+public class SignUpForm {
     @JsonProperty("username")
     private String username;
+
     @JsonProperty("password")
     private String password;
+
+    @JsonProperty("email")
+    private String email;
+
+    @JsonProperty("gender")
+    private String gender;
+
+    @JsonProperty("role_Name")
+    private String role_Name;
 }

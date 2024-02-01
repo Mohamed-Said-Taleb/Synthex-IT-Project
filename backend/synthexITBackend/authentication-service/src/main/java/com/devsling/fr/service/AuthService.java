@@ -1,15 +1,14 @@
 package com.devsling.fr.service;
 
+import com.devsling.fr.dto.GetTokenResponse;
+import com.devsling.fr.dto.GetTokenValidationResponse;
 import com.devsling.fr.dto.LoginForm;
-import com.devsling.fr.dto.SignupForm;
-import com.devsling.fr.security.MyUserDetailsService;
-import com.devsling.fr.tools.TokenValidationResponse;
+import com.devsling.fr.dto.SignUpForm;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 
 public interface AuthService {
-    ResponseEntity<?> signup(SignupForm signUpForm);
+    ResponseEntity<?> signup(SignUpForm signUpForm);
 
-     String getToken(LoginForm loginForm);
-    TokenValidationResponse validateToken(String token);
+    GetTokenResponse getToken(LoginForm loginForm);
+    GetTokenValidationResponse validateToken(String token);
 }
