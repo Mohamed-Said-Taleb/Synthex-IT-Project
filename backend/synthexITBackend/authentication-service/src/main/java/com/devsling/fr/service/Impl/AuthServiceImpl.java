@@ -1,25 +1,22 @@
 package com.devsling.fr.service.Impl;
 
-import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.devsling.fr.dto.GetTokenResponse;
+import com.devsling.fr.dto.GetTokenValidationResponse;
 import com.devsling.fr.dto.LoginForm;
-import com.devsling.fr.dto.SignupForm;
+import com.devsling.fr.dto.SignUpForm;
 import com.devsling.fr.entities.AppUser;
 import com.devsling.fr.repository.RoleRepository;
 import com.devsling.fr.repository.UserRepository;
 import com.devsling.fr.security.JwtUtils;
-import com.devsling.fr.security.MyUserDetailsService;
 import com.devsling.fr.service.AuthService;
 import com.devsling.fr.service.helper.UserServiceHelper;
 import com.devsling.fr.tools.ErrorModel;
-import com.devsling.fr.tools.TokenValidationResponse;
-import io.jsonwebtoken.MalformedJwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -50,7 +47,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public ResponseEntity<?> signup(SignupForm signUpForm) {
+    public ResponseEntity<?> signup(SignUpForm signUpForm) {
         if (userRepository.existsByUsername(signUpForm.getUsername())) {
             return new ResponseEntity<>(new ErrorModel("Username is used "), HttpStatus.BAD_REQUEST);
         }
@@ -78,7 +75,6 @@ public class AuthServiceImpl implements AuthService {
                 .email(signUpForm.getEmail())
                 .password(bCryptPasswordEncoder.encode(signUpForm.getPassword()))
                 .gender(signUpForm.getGender())
-                .enabled(signUpForm.getEnabled())
                 .appRoles(Collections.singletonList(roleRepository.findByRole(signUpForm.getRole_Name())))
                 .build();
 
@@ -89,11 +85,16 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
-    public String getToken(LoginForm loginForm) {
+    public GetTokenResponse getToken(LoginForm loginForm) {
         try {
             Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginForm.getUsername(), loginForm.getPassword()));
             if (authenticate.isAuthenticated()) {
-                return jwtUtils.generateToken(loginForm.getUsername(),authenticate);
+                String token = jwtUtils.generateToken(loginForm.getUsername(),authenticate);
+                return GetTokenResponse.builder()
+                        .token(token)
+                        .type("Bearer")
+                        .username(loginForm.getUsername())
+                        .build();
             } else {
                 throw new RuntimeException("Invalid access");
             }
@@ -103,14 +104,13 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public TokenValidationResponse validateToken(String token) {
+    public GetTokenValidationResponse validateToken(String token) {
 
             if ((jwtUtils.validateToken(token))){
-            return TokenValidationResponse.builder()
-                    .status("Valid").build();
+            return GetTokenValidationResponse.builder()
+                    .status("Valid token").build();
             }
-            return TokenValidationResponse.builder()
-                    .status("Invalid").build();
+            return GetTokenValidationResponse.builder()
+                    .status("Invalid token").build();
     }
-
 }

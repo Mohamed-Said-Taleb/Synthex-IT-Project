@@ -1,18 +1,18 @@
 package com.devsling.fr.controller;
 
+import com.devsling.fr.dto.GetForgetPasswordResponse;
+import com.devsling.fr.dto.GetTokenResponse;
 import com.devsling.fr.dto.LoginForm;
-import com.devsling.fr.dto.SignupForm;
-import com.devsling.fr.security.MyUserDetailsService;
+import com.devsling.fr.dto.SignUpForm;
+import com.devsling.fr.dto.GetTokenValidationResponse;
 import com.devsling.fr.service.AuthService;
-import com.devsling.fr.tools.TokenValidationResponse;
+import com.devsling.fr.service.ForgetPasswordService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,33 +23,39 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class AuthController {
 
-
     private final AuthService authService;
-
-
-
+    private final ForgetPasswordService forgetPasswordService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> signup(@Valid @RequestBody SignupForm signUpForm) {
+    public ResponseEntity<?> signup(@Valid @RequestBody SignUpForm signUpForm) {
         return authService.signup(signUpForm);
     }
-    @PostMapping("/token")
-    public ResponseEntity<String> getToken(@RequestBody LoginForm loginForm) {
-        try {
-            String token = authService.getToken(loginForm);
-            return ResponseEntity.ok(token);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        }}
-
-    @PostMapping("/validate")
-    public Mono<TokenValidationResponse> validateToken(@RequestParam("token") String token) {
+    @PostMapping("/login")
+    public Mono<GetTokenResponse> getToken(@RequestBody LoginForm loginForm) {
         return Mono.fromCallable(() -> {
-                    TokenValidationResponse result = authService.validateToken(token);
+                   return authService.getToken(loginForm);
+                })
+                .onErrorResume(Exception.class, e -> Mono.just(new GetTokenResponse("Invalid access",null,null)));
+    }
+
+    @PostMapping("/validate-token")
+    public Mono<GetTokenValidationResponse> validateToken(@RequestParam("token") String token) {
+        return Mono.fromCallable(() -> {
+                    GetTokenValidationResponse result = authService.validateToken(token);
                     return result;
                 })
-                .onErrorResume(Exception.class, e -> {
-                    return Mono.just(new TokenValidationResponse("Invalid token: " + e.getMessage()));
-                });
-
-}}
+                .onErrorResume(Exception.class, e -> Mono.just(new GetTokenValidationResponse("Invalid token: ")));
+    }
+    @PostMapping("/password-request")
+    public Mono<GetForgetPasswordResponse> passwordRequest(@RequestParam("email") String email) {
+        return Mono.fromCallable(() -> forgetPasswordService.passwordReset(email))
+                .onErrorResume(Exception.class, e -> Mono.just(new GetForgetPasswordResponse(e.getMessage(),null)));
+    }
+    @GetMapping("/reset-password")
+    public Mono<GetTokenValidationResponse> resetPassword(@RequestParam("token") String token,
+                                                          @RequestParam("password") String password,
+                                                          @RequestParam("confirmationPassword") String confirmationPassword) {
+        return Mono.fromCallable(() -> forgetPasswordService.resetPasswordAndValidateToken(token,password,confirmationPassword))
+                .onErrorResume(Exception.class, e -> Mono.just(new GetTokenValidationResponse("Invalid token: ")));
+    }
+}
