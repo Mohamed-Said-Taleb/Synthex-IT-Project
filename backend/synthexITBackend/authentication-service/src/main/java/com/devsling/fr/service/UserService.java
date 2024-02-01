@@ -1,15 +1,14 @@
 package com.devsling.fr.service;
 
 
-import com.devsling.fr.entities.AppUser;
 import com.devsling.fr.entities.AppRole;
-import com.devsling.fr.dto.SignupForm;
-import org.springframework.http.ResponseEntity;
+import com.devsling.fr.entities.AppUser;
 
 import java.util.List;
 
 public interface UserService {
     AppUser findUserByUsername(String userName);
+    AppUser findUserByEmail(String email);
 
     List<AppUser> getAllUser();
 
