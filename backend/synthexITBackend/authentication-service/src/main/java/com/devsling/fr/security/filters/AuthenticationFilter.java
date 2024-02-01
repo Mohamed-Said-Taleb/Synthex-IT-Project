@@ -17,18 +17,21 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.stereotype.Component;
 
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.devsling.fr.tools.Constants.AUTHORISATION;
 
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private AuthenticationManager authenticationManager;
+    public AuthenticationManager authenticationManager;
 
     public AuthenticationFilter(AuthenticationManager authenticationManager) {
         super();
@@ -59,13 +62,23 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
             roles.add(au.getAuthority());
 
         });
-        String Jwt = JWT
+        String jwtAccesToken = JWT
                 .create()
                 .withSubject(SpringUser.getUsername())
                 .withArrayClaim("roles", roles.toArray(new String[roles.size()]))
                 .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
                 .sign(Algorithm.HMAC256(SecParam.Secret));
-        response.addHeader(AUTHORISATION, Jwt);
+        String jwtRefreshToken = JWT
+                .create()
+                .withSubject(SpringUser.getUsername())
+                .withExpiresAt(new Date(System.currentTimeMillis() + 1000 * 60 * 60))// use long duration
+                .sign(Algorithm.HMAC256(SecParam.Secret));
+
+        Map<String,String> idToken=new HashMap<>();
+        idToken.put("access-token",jwtAccesToken);
+        idToken.put("refresh-token",jwtRefreshToken);
+        response.setContentType("application/json");
+        new ObjectMapper().writeValue(response.getOutputStream(),idToken);
     }
 }
 
