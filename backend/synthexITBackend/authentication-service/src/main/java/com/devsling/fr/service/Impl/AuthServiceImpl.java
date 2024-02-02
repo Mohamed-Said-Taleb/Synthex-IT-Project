@@ -1,18 +1,16 @@
 package com.devsling.fr.service.Impl;
 
-import com.devsling.fr.dto.GetTokenResponse;
-import com.devsling.fr.dto.GetTokenValidationResponse;
-import com.devsling.fr.dto.LoginForm;
-import com.devsling.fr.dto.SignUpForm;
+import com.devsling.fr.dto.Responses.GetTokenResponse;
+import com.devsling.fr.dto.Responses.GetTokenValidationResponse;
+import com.devsling.fr.dto.Requests.LoginFormRequest;
+import com.devsling.fr.dto.Requests.SignUpFormRequest;
+import com.devsling.fr.dto.Responses.RegisterResponse;
 import com.devsling.fr.entities.AppUser;
 import com.devsling.fr.repository.RoleRepository;
 import com.devsling.fr.repository.UserRepository;
 import com.devsling.fr.security.JwtUtils;
 import com.devsling.fr.service.AuthService;
-import com.devsling.fr.service.helper.UserServiceHelper;
-import com.devsling.fr.tools.ErrorModel;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import com.devsling.fr.service.helper.Helper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -29,7 +27,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
 
     private final RoleRepository roleRepository;
-    private final UserServiceHelper userServiceHelper;
+    private final Helper helper;
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -37,69 +35,68 @@ public class AuthServiceImpl implements AuthService {
 
     private final AuthenticationManager authenticationManager;
 
-    private AuthServiceImpl(UserRepository userRepository, RoleRepository roleRepository, UserServiceHelper userServiceHelper, BCryptPasswordEncoder bCryptPasswordEncoder, JwtUtils jwtUtils, AuthenticationManager authenticationManager) {
+    private AuthServiceImpl(UserRepository userRepository, RoleRepository roleRepository, Helper helper, BCryptPasswordEncoder bCryptPasswordEncoder, JwtUtils jwtUtils, AuthenticationManager authenticationManager) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
-        this.userServiceHelper = userServiceHelper;
+        this.helper = helper;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.jwtUtils = jwtUtils;
         this.authenticationManager = authenticationManager;
     }
 
     @Override
-    public ResponseEntity<?> signup(SignUpForm signUpForm) {
-        if (userRepository.existsByUsername(signUpForm.getUsername())) {
-            return new ResponseEntity<>(new ErrorModel("Username is used "), HttpStatus.BAD_REQUEST);
+    public RegisterResponse signup(SignUpFormRequest signUpFormRequest) {
+        RegisterResponse validationResponse = helper.validateSignUpFormRequest(signUpFormRequest);
+        if (!validationResponse.getMessage().equals("Validation successful")) {
+            return validationResponse;
         }
-        if (signUpForm.getUsername().isEmpty()) {
-            return new ResponseEntity<>(new ErrorModel("Username should not be empty"), HttpStatus.BAD_REQUEST);
-        }
-        if (signUpForm.getPassword().isEmpty()) {
-            return new ResponseEntity<>(new ErrorModel("Password should not be empty"), HttpStatus.BAD_REQUEST);
-        }
-        if (signUpForm.getPassword().length() < 5) {
-            return new ResponseEntity<>(new ErrorModel("Short PassWord"), HttpStatus.BAD_REQUEST);
+        try {
+            AppUser appUserBd = AppUser.builder()
+                    .username(signUpFormRequest.getUsername())
+                    .email(signUpFormRequest.getEmail())
+                    .password(bCryptPasswordEncoder.encode(signUpFormRequest.getPassword()))
+                    .gender(signUpFormRequest.getGender())
+                    .appRoles(Collections.singletonList(roleRepository.findByRole(signUpFormRequest.getRole_Name())))
+                    .build();
 
-        }
-        if (signUpForm.getEmail().isEmpty()) {
-            return new ResponseEntity<>(new ErrorModel("Email should not be empty"), HttpStatus.BAD_REQUEST);
-        }
-        if (!(userServiceHelper.isValidEmailAddress(signUpForm.getEmail()))) {
-            return new ResponseEntity<>(new ErrorModel("Invalid email"), HttpStatus.BAD_REQUEST);
-        }
-        if (userRepository.existsByEmail(signUpForm.getEmail())) {
-            return new ResponseEntity<>(new ErrorModel("email is used"), HttpStatus.BAD_REQUEST);
-        }
-        AppUser appUserBd = AppUser.builder()
-                .username(signUpForm.getUsername())
-                .email(signUpForm.getEmail())
-                .password(bCryptPasswordEncoder.encode(signUpForm.getPassword()))
-                .gender(signUpForm.getGender())
-                .appRoles(Collections.singletonList(roleRepository.findByRole(signUpForm.getRole_Name())))
-                .build();
+            userRepository.save(appUserBd);
 
-        userRepository.save(appUserBd);
-
-        return new ResponseEntity<>(HttpStatus.CREATED);
+            return RegisterResponse.builder()
+                    .message("User registered successfully")
+                    .build();
+        } catch (Exception e) {
+            return RegisterResponse.builder()
+                    .message("Error registering user: " + e.getMessage())
+                    .build();
+        }
     }
 
 
-    @Override
-    public GetTokenResponse getToken(LoginForm loginForm) {
+
+    public GetTokenResponse getToken(LoginFormRequest loginFormRequest) {
+        RegisterResponse validationResponse = helper.validateLoginFormRequest(loginFormRequest);
+        if (!"Validation successful".equals(validationResponse.getMessage())) {
+            return GetTokenResponse.builder()
+                    .message(validationResponse.getMessage())
+                    .build();
+        }
+
         try {
-            Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginForm.getUsername(), loginForm.getPassword()));
+            Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginFormRequest.getUsername(), loginFormRequest.getPassword()));
             if (authenticate.isAuthenticated()) {
-                String token = jwtUtils.generateToken(loginForm.getUsername(),authenticate);
+                String token = jwtUtils.generateToken(loginFormRequest.getUsername(), authenticate);
                 return GetTokenResponse.builder()
                         .token(token)
-                        .type("Bearer")
-                        .username(loginForm.getUsername())
                         .build();
             } else {
-                throw new RuntimeException("Invalid access");
+                return GetTokenResponse.builder()
+                        .message("Invalid access ")
+                        .build();
             }
         } catch (AuthenticationException e) {
-            throw new RuntimeException("Invalid username or password", e);
+            return GetTokenResponse.builder()
+                    .message("Invalid username or password")
+                    .build();
         }
     }
 
