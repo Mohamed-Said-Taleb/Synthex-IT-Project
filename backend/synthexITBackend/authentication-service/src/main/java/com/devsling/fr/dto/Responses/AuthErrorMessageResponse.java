@@ -1,7 +1,6 @@
-package com.devsling.fr.dto;
+package com.devsling.fr.dto.Responses;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +12,7 @@ import java.io.Serializable;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthErrorMessage implements Serializable {
+public class AuthErrorMessageResponse implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @JsonIgnore

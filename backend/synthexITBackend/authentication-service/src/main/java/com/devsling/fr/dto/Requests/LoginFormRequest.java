@@ -1,4 +1,4 @@
-package com.devsling.fr.dto;
+package com.devsling.fr.dto.Requests;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -10,13 +10,9 @@ import lombok.NoArgsConstructor;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetTokenResponse {
-    @JsonProperty("token")
-    private String token;
-
-    @JsonProperty("type")
-    private String type = "Bearer";
-
+public class LoginFormRequest {
     @JsonProperty("username")
     private String username;
+    @JsonProperty("password")
+    private String password;
 }

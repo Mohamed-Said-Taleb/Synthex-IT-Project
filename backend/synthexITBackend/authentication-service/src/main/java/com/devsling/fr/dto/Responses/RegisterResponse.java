@@ -1,4 +1,4 @@
-package com.devsling.fr.dto;
+package com.devsling.fr.dto.Responses;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -10,9 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginForm {
-    @JsonProperty("username")
-    private String username;
-    @JsonProperty("password")
-    private String password;
+public class RegisterResponse {
+    @JsonProperty("message")
+    private String message;
 }
