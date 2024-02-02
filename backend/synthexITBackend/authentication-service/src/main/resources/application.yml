@@ -19,7 +19,7 @@ spring:
     host: smtp.gmail.com
     port: 587
     username: mohamed.s.taleb@devsling.com
-    password: xxxxxxxxxxx
+    password: knfbgoywcbusaiep
     properties:
       mail:
         smtp:
