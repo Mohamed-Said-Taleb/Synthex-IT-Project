@@ -15,7 +15,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import com.devsling.fr.tools.SecParam;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,12 +36,12 @@ public class AuthorizationFilter extends OncePerRequestFilter {
         }
         String jwt = httpServletRequest.getHeader(Constants.AUTHORISATION);
 
-        if (jwt == null || !jwt.startsWith(SecParam.Prefixe)) {
+        if (jwt == null || !jwt.startsWith(Constants.Prefixe)) {
             filterChain.doFilter(httpServletRequest, httpServletResponse);
             return;
         }
-        JWTVerifier verifier = JWT.require(Algorithm.HMAC256(SecParam.Secret)).build();
-        jwt = jwt.substring(SecParam.Prefixe.length());
+        JWTVerifier verifier = JWT.require(Algorithm.HMAC256(Constants.Secret)).build();
+        jwt = jwt.substring(Constants.Prefixe.length());
         DecodedJWT decodedJWT = verifier.verify(jwt);
         String username = decodedJWT.getSubject();
         List<String> roles = decodedJWT.getClaims().get("roles").asList(String.class);

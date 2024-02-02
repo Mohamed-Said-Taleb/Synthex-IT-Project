@@ -1,27 +1,31 @@
 package com.devsling.fr.service.Impl;
 
-import com.devsling.fr.controller.AuthController;
-import com.devsling.fr.dto.GetForgetPasswordResponse;
-import com.devsling.fr.dto.GetTokenValidationResponse;
+import com.devsling.fr.dto.Responses.GetForgetPasswordResponse;
+import com.devsling.fr.dto.Responses.GetTokenValidationResponse;
 import com.devsling.fr.entities.AppUser;
 import com.devsling.fr.entities.ForgetPasswordToken;
 import com.devsling.fr.repository.ForgetPasswordRepository;
 import com.devsling.fr.service.ForgetPasswordService;
 import com.devsling.fr.service.UserService;
+import com.devsling.fr.service.helper.Helper;
 import com.devsling.fr.tools.Constants;
 import jakarta.mail.MessagingException;
+import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import static com.devsling.fr.tools.Constants.EMAIL_PERSONAL;
+import static com.devsling.fr.tools.Constants.EMAIL_SENDER;
 
 @Service
 @RequiredArgsConstructor
@@ -30,9 +34,12 @@ public class ForgetPasswordImpl implements ForgetPasswordService {
     private final JavaMailSender javaMailSender;
     private final ForgetPasswordRepository forgetPasswordRepository;
     private final UserService userService;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final Helper helper;
+    private final TemplateEngine thymeleafTemplateEngine;
 
-    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
+    public static final String EMAIL_LINK = "emaillink";
+    public static final String USERNAME = "username";
+    public static final String EMAIL_TEMPLATE = "reset-password-email-template";
 
     @Override
     public void saveForgetPasswordToken(ForgetPasswordToken token) {
@@ -44,44 +51,35 @@ public class ForgetPasswordImpl implements ForgetPasswordService {
         return UUID.randomUUID().toString();
     }
 
-
-
-    @Override
-    public LocalDateTime expireTimeRange() {
-        return LocalDateTime.now().plusMinutes(Constants.MINUTES);
-    }
-
     @Override
     public ForgetPasswordToken getByToken(String token) {
         return forgetPasswordRepository.findByToken(token);
     }
 
     @Override
-    public void sendMail(String receiver, String subject, String emailLink) throws MessagingException, UnsupportedEncodingException {
+    public void sendMail(String username,String receiver, String subject, String emailLink) throws MessagingException, UnsupportedEncodingException {
 
-        MimeMessage message=  javaMailSender.createMimeMessage();
-        MimeMessageHelper helper=new MimeMessageHelper(message);
-        String emailContent ="<p>Hello</p>"+"Click the link bellow to reset password"
-                +"<p><a href=\""+ emailLink + "\">Change my password</p>";
-
-        helper.setText(emailContent,true);
-        helper.setFrom("mohamed.s.taleb@devsling.com","Coding Support");
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+        Context context = new Context();
+        context.setVariable(EMAIL_LINK, emailLink);
+        context.setVariable(USERNAME, username);
+        String emailContent = thymeleafTemplateEngine.process(EMAIL_TEMPLATE, context);
+        helper.setText(emailContent, true);
+        helper.setFrom(new InternetAddress(EMAIL_SENDER, EMAIL_PERSONAL));
         helper.setSubject(subject);
         helper.setTo(receiver);
         javaMailSender.send(message);
-
     }
+
     @Override
-    public GetTokenValidationResponse resetPasswordAndValidateToken(String token, String password, String confirmationPassword) {
+    public GetTokenValidationResponse validatePasswordReset(String token, String password, String confirmationPassword) {
         try {
             if (password.equals(confirmationPassword)) {
                 ForgetPasswordToken forgetPasswordToken = getByToken(token);
-                if (forgetPasswordToken != null && !forgetPasswordToken.isUsed() && !isExpired(forgetPasswordToken)) {
+                if (helper.isValidToken(forgetPasswordToken)) {
                     AppUser user = forgetPasswordToken.getAppUser();
-                    forgetPasswordToken.setUsed(true);
-                    user.setPassword(bCryptPasswordEncoder.encode(password));
-                    userService.saveUser(user);
-                    saveForgetPasswordToken(forgetPasswordToken);
+                    helper.resetPasswordAndSave(forgetPasswordToken, user, password);
                     return new GetTokenValidationResponse("Password reset successful");
                 } else {
                     return new GetTokenValidationResponse("Invalid or used/expired token");
@@ -90,46 +88,29 @@ public class ForgetPasswordImpl implements ForgetPasswordService {
                 return new GetTokenValidationResponse("Password and confirmation password do not match");
             }
         } catch (Exception e) {
-            log.error("Error resetting password and validating token", e);
             return new GetTokenValidationResponse("Error resetting password");
         }
     }
-
     @Override
-    public boolean isExpired(ForgetPasswordToken forgetPasswordToken) {
-        return LocalDateTime.now().isAfter(forgetPasswordToken.getExpireTime());
-    }
-
-    public GetForgetPasswordResponse passwordReset(String email) {
+    public GetForgetPasswordResponse passwordResetMail(String email) {
         try {
-            AppUser user = userService.findUserByEmail(email);
-            if (user == null) {
-                return new GetForgetPasswordResponse("This email is not registered",null);
+            GetForgetPasswordResponse validationResponse = helper.validatePasswordReset(email);
+            if (!validationResponse.getMessage().equals("Validation successful")) {
+                return validationResponse;
             }
 
+            AppUser user = userService.findUserByEmail(email);
             ForgetPasswordToken forgetPasswordToken = createForgetPasswordToken(user);
 
-
-            sendMail(user.getEmail(), "Password reset link", "link");
+            sendMail(user.getUsername(), user.getEmail(), "Password reset link", "link");
 
             saveForgetPasswordToken(forgetPasswordToken);
-
-            log.info("Password reset email sent for user: {}", user.getUsername());
-
-            return new GetForgetPasswordResponse("Password reset email sent successfully",forgetPasswordToken.getToken());
+            return new GetForgetPasswordResponse("Password reset email sent successfully", forgetPasswordToken.getToken());
         } catch (MessagingException | UnsupportedEncodingException e) {
-            log.error("Error sending password reset email", e);
-            return new GetForgetPasswordResponse("Error sending password reset email",null);
-        }
-    }
+            return new GetForgetPasswordResponse("Error sending password reset email", null);
+        }}
+
     private ForgetPasswordToken createForgetPasswordToken(AppUser user) {
-        return ForgetPasswordToken.builder()
-                .expireTime(expireTimeRange())
-                .isUsed(false)
-                .appUser(user)
-                .token(generateToken())
-                .build();
+        return ForgetPasswordToken.builder().expireTime(helper.expireTimeRange()).isUsed(false).appUser(user).token(generateToken()).build();
     }
-
-
 }
