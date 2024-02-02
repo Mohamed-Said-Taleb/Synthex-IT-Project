@@ -41,10 +41,8 @@ public class ForgetPasswordImpl implements ForgetPasswordService {
     public static final String USERNAME = "username";
     public static final String EMAIL_TEMPLATE = "reset-password-email-template";
 
-    @Override
-    public void saveForgetPasswordToken(ForgetPasswordToken token) {
-        forgetPasswordRepository.save(token);
-    }
+
+
 
     @Override
     public String generateToken() {
@@ -104,7 +102,7 @@ public class ForgetPasswordImpl implements ForgetPasswordService {
 
             sendMail(user.getUsername(), user.getEmail(), "Password reset link", "link");
 
-            saveForgetPasswordToken(forgetPasswordToken);
+            helper.saveForgetPasswordToken(forgetPasswordToken);
             return new GetForgetPasswordResponse("Password reset email sent successfully", forgetPasswordToken.getToken());
         } catch (MessagingException | UnsupportedEncodingException e) {
             return new GetForgetPasswordResponse("Error sending password reset email", null);

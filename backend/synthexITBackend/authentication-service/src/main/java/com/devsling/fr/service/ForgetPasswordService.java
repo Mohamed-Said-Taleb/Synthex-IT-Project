@@ -14,7 +14,7 @@ public interface ForgetPasswordService {
 
     GetForgetPasswordResponse passwordResetMail(String email);
 
-    void saveForgetPasswordToken(ForgetPasswordToken token);
+
     String generateToken();
 
     ForgetPasswordToken getByToken(String token);
