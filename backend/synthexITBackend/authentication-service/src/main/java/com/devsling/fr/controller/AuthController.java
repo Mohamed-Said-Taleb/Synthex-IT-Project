@@ -8,8 +8,11 @@ import com.devsling.fr.dto.Responses.GetTokenValidationResponse;
 import com.devsling.fr.dto.Responses.RegisterResponse;
 import com.devsling.fr.service.AuthService;
 import com.devsling.fr.service.ForgetPasswordService;
+import com.devsling.fr.tools.Constants;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,32 +29,58 @@ public class AuthController {
     private final ForgetPasswordService forgetPasswordService;
 
     @PostMapping("/register")
-    public Mono<RegisterResponse> register(@Valid @RequestBody SignUpFormRequest signUpFormRequest) {
-        return Mono.fromCallable(() -> authService.signup(signUpFormRequest))
-                .onErrorResume(Exception.class, e -> Mono.just(new RegisterResponse(e.getMessage())));
+    public Mono<ResponseEntity<RegisterResponse>> register(@Valid @RequestBody SignUpFormRequest signUpFormRequest) {
+        return authService.signup(signUpFormRequest)
+                .map(signupResponse -> {
+                    if (!(signupResponse.getMessage().equals(Constants.USER_REGISTERED_SUCCESSFULLY))){
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(signupResponse);
+                    }
+                 return ResponseEntity.status(HttpStatus.OK).body(signupResponse);
+                });
     }
 
     @PostMapping("/login")
-    public Mono<GetTokenResponse> login(@Valid @RequestBody LoginFormRequest loginFormRequest) {
-        return Mono.fromCallable(() -> authService.getToken(loginFormRequest))
-                .onErrorResume(Exception.class, e -> Mono.just(new GetTokenResponse(null,e.getMessage())));
+    public Mono<ResponseEntity<GetTokenResponse>> login(@Valid @RequestBody LoginFormRequest loginFormRequest) {
+        return authService.getToken(loginFormRequest)
+                .map(tokenResponse -> {
+                    if (tokenResponse.getMessage().equals(Constants.INVALID_USERNAME_OR_PASSWORD)){
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(tokenResponse);
+                    }
+                    return ResponseEntity.status(HttpStatus.OK).body(tokenResponse);
+                });
+
     }
 
     @PostMapping("/validate-token")
-    public Mono<GetTokenValidationResponse> validateToken(@RequestParam("token") String token) {
-        return Mono.fromCallable(() -> authService.validateToken(token))
-                .onErrorResume(Exception.class, e -> Mono.just(new GetTokenValidationResponse(e.getMessage())));
+    public Mono<ResponseEntity<GetTokenValidationResponse>> validateToken(@RequestParam("token") String token) {
+        return authService.validateToken(token)
+                .map(tokenValidationResponse ->{
+                    if (tokenValidationResponse.getMessage().equals(Constants.INVALID_TOKEN)){
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(tokenValidationResponse);
+                    }
+                   return ResponseEntity.status(HttpStatus.OK).body(tokenValidationResponse);
+                } );
     }
 
     @PostMapping("/password-request")
-    public Mono<GetForgetPasswordResponse> passwordRequest(@RequestParam("email") String email) {
-        return Mono.fromCallable(() -> forgetPasswordService.passwordResetMail(email))
-                .onErrorResume(Exception.class, e -> Mono.just(new GetForgetPasswordResponse(e.getMessage(), null)));
+    public  Mono<ResponseEntity<GetForgetPasswordResponse>> passwordRequest(@RequestParam("email") String email) {
+        return forgetPasswordService.passwordResetMail(email)
+                .map(tokenValidationResponse -> {
+                    if (tokenValidationResponse.getMessage().equals(Constants.WRONG_PASSWORD)) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(tokenValidationResponse);
+                    }
+                    return ResponseEntity.status(HttpStatus.OK).body(tokenValidationResponse);
+                });
     }
 
     @PostMapping("/reset-password")
-    public Mono<GetTokenValidationResponse> resetPassword(@RequestParam("token") String token, @RequestParam("password") String password, @RequestParam("confirmationPassword") String confirmationPassword) {
-        return Mono.fromCallable(() -> forgetPasswordService.validatePasswordReset(token, password, confirmationPassword))
-                .onErrorResume(Exception.class, e -> Mono.just(new GetTokenValidationResponse(e.getMessage())));
+    public Mono<ResponseEntity<GetTokenValidationResponse>> resetPassword(@RequestParam("token") String token, @RequestParam("password") String password, @RequestParam("confirmationPassword") String confirmationPassword) {
+        return forgetPasswordService.validatePasswordReset(token, password, confirmationPassword)
+                .map(tokenValidationResponse ->{
+                    if (tokenValidationResponse.getMessage().equals(Constants.WRONG_PASSWORD)){
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(tokenValidationResponse);
+                    }
+                    return ResponseEntity.status(HttpStatus.OK).body(tokenValidationResponse);
+                } );
     }
 }

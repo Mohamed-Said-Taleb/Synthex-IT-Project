@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GetTokenValidationResponse {
-    @JsonProperty("status")
-    private String status;
+    @JsonProperty("message")
+    private String message;
 }
