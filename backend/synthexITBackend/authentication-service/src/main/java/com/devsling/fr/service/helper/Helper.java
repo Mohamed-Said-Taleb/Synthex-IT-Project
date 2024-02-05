@@ -6,6 +6,7 @@ import com.devsling.fr.dto.Responses.GetForgetPasswordResponse;
 import com.devsling.fr.dto.Responses.RegisterResponse;
 import com.devsling.fr.entities.AppUser;
 import com.devsling.fr.entities.ForgetPasswordToken;
+import com.devsling.fr.repository.ForgetPasswordRepository;
 import com.devsling.fr.repository.UserRepository;
 import com.devsling.fr.service.ForgetPasswordService;
 import com.devsling.fr.service.UserService;
@@ -22,8 +23,8 @@ public class Helper {
 
     private final UserRepository userRepository;
     private final UserService userService;
-    private final ForgetPasswordService forgetPasswordService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final ForgetPasswordRepository forgetPasswordRepository;
 
 
     public Boolean isValidEmailAddress(String email) {
@@ -45,7 +46,10 @@ public class Helper {
 
     public RegisterResponse validateSignUpFormRequest(SignUpFormRequest signUpFormRequest) {
         if (userRepository.existsByUsername(signUpFormRequest.getUsername())) {
-            return RegisterResponse.builder().message("Username is already in use").build();
+            return RegisterResponse
+                    .builder()
+                    .message("Username is already in use")
+                    .build();
         }
 
         if (signUpFormRequest.getUsername().isEmpty()) {
@@ -86,7 +90,7 @@ public class Helper {
         return RegisterResponse.builder().message("Validation successful").build();
     }
 
-    private boolean isStrongerPassword(String password) {
+    public boolean isStrongerPassword(String password) {
         if (password == null) {
             throw new IllegalArgumentException("Password cannot be null");
         }
@@ -126,7 +130,10 @@ public class Helper {
         forgetPasswordToken.setUsed(true);
         user.setPassword(bCryptPasswordEncoder.encode(password));
         userService.saveUser(user);
-        forgetPasswordService.saveForgetPasswordToken(forgetPasswordToken);
+        saveForgetPasswordToken(forgetPasswordToken);
+    }
+    public void saveForgetPasswordToken(ForgetPasswordToken token) {
+        forgetPasswordRepository.save(token);
     }
 
     private boolean containsUppercaseLetter(String password) {

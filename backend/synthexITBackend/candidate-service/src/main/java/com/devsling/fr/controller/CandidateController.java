@@ -1,29 +1,25 @@
 package com.devsling.fr.controller;
 
-import com.devsling.fr.model.Candidate;
-import com.devsling.fr.repository.CandidateRepository;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
+import com.devsling.fr.service.CandidateService;
+import lombok.RequiredArgsConstructor;
+import org.openapitools.model.Candidate;
+import org.openapitools.model.CandidateFullData;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
+import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/candidate")
-public class CandidateController  {
+@RequiredArgsConstructor
+public class CandidateController implements CandidateApi {
 
-    private final CandidateRepository candidateRepository;
-
-
-    public CandidateController(CandidateRepository candidateRepository) {
-        this.candidateRepository = candidateRepository;
-    }
+    private final CandidateService candidateService;
 
 
-    @GetMapping("/all")
-    public List<Candidate> getAll( @RequestHeader("LoggedUser") String username){
-        System.out.println("LOgged user is" +" " +username);
-        return   candidateRepository.findAll();
+    @Override
+    public Mono<ResponseEntity<CandidateFullData>> createCandidate(Mono<Candidate> candidate, ServerWebExchange exchange) {
+        return candidateService.create(candidate)
+                .map(createdCandidate -> ResponseEntity.status(HttpStatus.OK).body(createdCandidate));
     }
 }

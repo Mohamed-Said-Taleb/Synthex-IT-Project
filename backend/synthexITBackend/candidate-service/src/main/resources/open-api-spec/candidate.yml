@@ -12,30 +12,24 @@ tags:
   - name: Candidate
     description: Manage any resources
 paths:
-  /candidate:
-    get:
+  /create:
+    post:
       tags:
         - Candidate
-      summary: get all candidates
-      operationId: GetAllCandidate
-
+      summary: Create Candidate
+      operationId: createCandidate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Candidate'
       responses:
-        "200":
+        '200':
           description: OK
           content:
-            application/json:
+            'application/json':
               schema:
                 $ref: '#/components/schemas/CandidateFullData'
-        "400":
-          $ref: '../open-api-spec/common/responses/common-responses.yaml#/400'
-        "403":
-          $ref: '../open-api-spec/common/responses/common-responses.yaml#/403'
-        "410":
-          $ref: '../open-api-spec/common/responses/common-responses.yaml#/410'
-        "500":
-          $ref: '../open-api-spec/common/responses/common-responses.yaml#/500'
-        "503":
-          $ref: '../open-api-spec/common/responses/common-responses.yaml#/503'
 components:
   schemas:
     Candidate:
@@ -47,12 +41,13 @@ components:
         lastName:
           type: string
           description: Last name of the Candidate
+        email:
+          type: string
+          description: email of the Candidate
     CandidateFullData:
       allOf:
         - $ref: '#/components/schemas/Candidate'
         - type: object
           properties:
-            candidateId:
+            customerId:
               type: integer
-              description: The ID of the Candidate
-              format: int64

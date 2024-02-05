@@ -22,6 +22,8 @@ public class Candidate implements Serializable {
     @Column(name = "id")
     private Long id;
 
+
+
     @Column(name = "first_name", nullable = false)
     private String firstName;
 
@@ -31,8 +33,6 @@ public class Candidate implements Serializable {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "password", nullable = false)
-    private String password;
 
     @ElementCollection
     @CollectionTable(name = "candidate_skills", joinColumns = @JoinColumn(name = "candidate_id"))

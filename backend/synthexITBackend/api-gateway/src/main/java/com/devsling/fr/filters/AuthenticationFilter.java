@@ -48,14 +48,14 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                 }
                 String finalAuthHeader = authHeader;
                 return authWebClient.post()
-                        .uri("http://localhost:8083/auth/validate",
+                        .uri("/auth/validate-token",
                                 uriBuilder -> uriBuilder.queryParam("token", finalAuthHeader).build())
                         .retrieve()
                         .bodyToMono(ValidateTokenResponse.class)
                         .flatMap(validateTokenResponse -> {
                             String status = validateTokenResponse.getStatus();
 
-                            if ("Valid".equals(status)) {
+                            if ("Valid token".equals(status)) {
                                 // Valid access to candidate
                                 // Add headers to the response before calling chain.filter()
 
