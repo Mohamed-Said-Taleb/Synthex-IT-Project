@@ -7,12 +7,13 @@ import jakarta.mail.MessagingException;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import com.devsling.fr.dto.Responses.GetTokenValidationResponse;
+import reactor.core.publisher.Mono;
 
 public interface ForgetPasswordService {
 
-    GetTokenValidationResponse validatePasswordReset(String token, String password, String confirmationPassword);
+    Mono<GetTokenValidationResponse> validatePasswordReset(String token, String password, String confirmationPassword);
 
-    GetForgetPasswordResponse passwordResetMail(String email);
+    Mono<GetForgetPasswordResponse> passwordResetMail(String email);
 
 
     String generateToken();

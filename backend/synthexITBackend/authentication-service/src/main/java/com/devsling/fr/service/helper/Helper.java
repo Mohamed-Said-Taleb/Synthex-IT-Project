@@ -46,7 +46,10 @@ public class Helper {
 
     public RegisterResponse validateSignUpFormRequest(SignUpFormRequest signUpFormRequest) {
         if (userRepository.existsByUsername(signUpFormRequest.getUsername())) {
-            return RegisterResponse.builder().message("Username is already in use").build();
+            return RegisterResponse
+                    .builder()
+                    .message("Username is already in use")
+                    .build();
         }
 
         if (signUpFormRequest.getUsername().isEmpty()) {
@@ -87,7 +90,7 @@ public class Helper {
         return RegisterResponse.builder().message("Validation successful").build();
     }
 
-    private boolean isStrongerPassword(String password) {
+    public boolean isStrongerPassword(String password) {
         if (password == null) {
             throw new IllegalArgumentException("Password cannot be null");
         }

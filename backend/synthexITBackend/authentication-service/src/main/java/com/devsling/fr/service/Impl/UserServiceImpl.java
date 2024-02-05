@@ -6,20 +6,18 @@ import com.devsling.fr.entities.AppUser;
 import com.devsling.fr.repository.RoleRepository;
 import com.devsling.fr.repository.UserRepository;
 import com.devsling.fr.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class  UserServiceImpl implements UserService {
 
    private final UserRepository userRepository;
    private final  RoleRepository roleRepository;
 
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository) {
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
-    }
 
     @Override
     public AppUser findUserByUsername(String username) {

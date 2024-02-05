@@ -1,6 +1,7 @@
 package com.devsling.fr.service.Impl;
 
 import com.devsling.fr.dto.Responses.GetForgetPasswordResponse;
+import com.devsling.fr.dto.Responses.GetTokenResponse;
 import com.devsling.fr.dto.Responses.GetTokenValidationResponse;
 import com.devsling.fr.entities.AppUser;
 import com.devsling.fr.entities.ForgetPasswordToken;
@@ -19,6 +20,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+import reactor.core.publisher.Mono;
 
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
@@ -26,6 +28,7 @@ import java.util.UUID;
 
 import static com.devsling.fr.tools.Constants.EMAIL_PERSONAL;
 import static com.devsling.fr.tools.Constants.EMAIL_SENDER;
+import static com.devsling.fr.tools.Constants.WRONG_PASSWORD;
 
 @Service
 @RequiredArgsConstructor
@@ -71,30 +74,41 @@ public class ForgetPasswordImpl implements ForgetPasswordService {
     }
 
     @Override
-    public GetTokenValidationResponse validatePasswordReset(String token, String password, String confirmationPassword) {
+    public Mono<GetTokenValidationResponse> validatePasswordReset(String token, String password, String confirmationPassword) {
         try {
             if (password.equals(confirmationPassword)) {
                 ForgetPasswordToken forgetPasswordToken = getByToken(token);
                 if (helper.isValidToken(forgetPasswordToken)) {
-                    AppUser user = forgetPasswordToken.getAppUser();
-                    helper.resetPasswordAndSave(forgetPasswordToken, user, password);
-                    return new GetTokenValidationResponse("Password reset successful");
+                    if(helper.isStrongerPassword(password)){
+                        helper.resetPasswordAndSave(forgetPasswordToken,forgetPasswordToken.getAppUser(), password);
+                        return  Mono.just(new GetTokenValidationResponse(WRONG_PASSWORD));
+                    }else {
+                        return Mono.just(GetTokenValidationResponse.builder()
+                                .message("Password reset successful")
+                                .build());
+                    }
+
                 } else {
-                    return new GetTokenValidationResponse("Invalid or used/expired token");
+                    return Mono.just(GetTokenValidationResponse.builder()
+                            .message("Invalid or used/expired token")
+                            .build());
                 }
             } else {
-                return new GetTokenValidationResponse("Password and confirmation password do not match");
+                return Mono.just(GetTokenValidationResponse.builder()
+                        .message("Password and confirmation password do not match")
+                        .build());
             }
         } catch (Exception e) {
-            return new GetTokenValidationResponse("Error resetting password");
-        }
+            return Mono.just(GetTokenValidationResponse.builder()
+                    .message("Error resetting password")
+                    .build());}
     }
     @Override
-    public GetForgetPasswordResponse passwordResetMail(String email) {
+    public  Mono<GetForgetPasswordResponse> passwordResetMail(String email) {
         try {
             GetForgetPasswordResponse validationResponse = helper.validatePasswordReset(email);
             if (!validationResponse.getMessage().equals("Validation successful")) {
-                return validationResponse;
+                return Mono.just(validationResponse);
             }
 
             AppUser user = userService.findUserByEmail(email);
@@ -103,9 +117,9 @@ public class ForgetPasswordImpl implements ForgetPasswordService {
             sendMail(user.getUsername(), user.getEmail(), "Password reset link", "link");
 
             helper.saveForgetPasswordToken(forgetPasswordToken);
-            return new GetForgetPasswordResponse("Password reset email sent successfully", forgetPasswordToken.getToken());
+            return Mono.just(new GetForgetPasswordResponse("Password reset email sent successfully", forgetPasswordToken.getToken())) ;
         } catch (MessagingException | UnsupportedEncodingException e) {
-            return new GetForgetPasswordResponse("Error sending password reset email", null);
+            return Mono.just(new GetForgetPasswordResponse("Error sending password reset email", null));
         }}
 
     private ForgetPasswordToken createForgetPasswordToken(AppUser user) {
