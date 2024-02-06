@@ -12,7 +12,7 @@ spring:
         - id: candidate-service
           uri: lb://CANDIDATE-SERVICE
           predicates:
-            - Path=/candidate/**
+            - Path=/candidates/**
           filters:
             - AuthenticationFilter
 

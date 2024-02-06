@@ -1,4 +1,4 @@
-package com.devsling.fr.adapters.backend.config;
+package com.devsling.fr.config.backend;
 
 import com.devsling.fr.config.WebClientConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;

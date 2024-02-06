@@ -1,7 +1,7 @@
 package com.devsling.fr.controller;
 
-import com.devsling.fr.dto.CandidateDto;
-import com.devsling.fr.service.CandidateService;
+import com.devsling.fr.dto.EmployerDto;
+import com.devsling.fr.service.EmployerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,35 +15,35 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/candidates")
+@RequestMapping("/employer")
 @RequiredArgsConstructor
-public class CandidateController {
+public class EmployerController {
 
-    private final CandidateService candidateService;
+    private final EmployerService employerService;
 
 
     @GetMapping
-    public Flux<CandidateDto> getCandidates(){
-        return candidateService.getCandidates();
+    public Flux<EmployerDto> getEmployer(){
+        return employerService.getEmployer();
     }
 
     @GetMapping("/{id}")
-    public Mono<CandidateDto> getCandidate(@PathVariable Long id){
-        return candidateService.getCandidate(id);
+    public Mono<EmployerDto> getEmployer(@PathVariable Long id){
+        return employerService.getEmployer(id);
     }
 
     @PostMapping
-    public Mono<CandidateDto> saveCandidate(@RequestBody CandidateDto candidateDto){
-        return candidateService.saveCandidate(Mono.just(candidateDto));
+    public Mono<EmployerDto> saveEmployer(@RequestBody EmployerDto employerDto){
+        return employerService.saveEmployer(Mono.just(employerDto));
     }
 
     @PutMapping("/update/{id}")
-    public Mono<CandidateDto> updateCandidate(@RequestBody CandidateDto candidateDto,@PathVariable Long id){
-        return candidateService.updateCandidate(Mono.just(candidateDto),id);
+    public Mono<EmployerDto> updateEmployer(@RequestBody EmployerDto employerDto, @PathVariable Long id){
+        return employerService.updateEmployer(Mono.just(employerDto),id);
     }
 
     @DeleteMapping("/delete/{id}")
     public Mono<Void> deleteCandidate(@PathVariable Long id){
-        return candidateService.deleteCandidate(id);
+        return employerService.deleteEmployer(id);
     }
 }

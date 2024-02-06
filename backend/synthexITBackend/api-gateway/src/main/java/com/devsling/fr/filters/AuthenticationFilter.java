@@ -53,7 +53,7 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                         .retrieve()
                         .bodyToMono(ValidateTokenResponse.class)
                         .flatMap(validateTokenResponse -> {
-                            String status = validateTokenResponse.getStatus();
+                            String status = validateTokenResponse.getMessage();
 
                             if ("Valid token".equals(status)) {
                                 // Valid access to candidate

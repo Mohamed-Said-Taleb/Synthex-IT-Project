@@ -19,8 +19,8 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(schema = "candidate")
-public class Candidate implements Serializable {
+@Table(schema = "employer")
+public class Employer implements Serializable {
 
     @Id
     @Column("id")
@@ -34,18 +34,4 @@ public class Candidate implements Serializable {
 
     @Column("email")
     private String email;
-
-
-    @ElementCollection
-    @CollectionTable(name = "candidate_skills", joinColumns = @JoinColumn(name = "candidate_id"))
-    @Column("skills")
-    private List<String> skills;
-
-    @Column("resume_url")
-    private String resumeUrl;
-
-    @ElementCollection
-    @CollectionTable(name = "professional_experiences", joinColumns = @JoinColumn(name = "candidate_id"))
-    @Column("experience")
-    private List<String> professionalExperiences;
 }

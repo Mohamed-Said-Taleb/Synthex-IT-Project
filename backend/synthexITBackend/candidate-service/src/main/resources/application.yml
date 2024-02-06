@@ -4,8 +4,8 @@ spring:
   application:
     name: candidate-service
 # PostgreSQL Data Source Configuration
-  datasource:
-        url: jdbc:postgresql://localhost:5432/mydatabase
+  r2dbc:
+        url: r2dbc:postgresql://localhost:5432/candidatedatabase
         username: myuser
         password: mypassword
   jpa:
