@@ -1,4 +1,4 @@
-package com.devsling.fr.adapters.backend.model.auth;
+package com.devsling.fr.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -10,8 +10,12 @@ import lombok.NoArgsConstructor;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class ValidateTokenBackendResponse {
+public class CandidateDto {
 
-    @JsonProperty("status")
-    private String status;
+    @JsonProperty("firstName")
+    private String firstName;
+    @JsonProperty("lastName")
+    private String lastName;
+    @JsonProperty("email")
+    private String email;
 }

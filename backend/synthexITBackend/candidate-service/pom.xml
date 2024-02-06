@@ -9,12 +9,11 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>candidate-service</artifactId>
+    <artifactId>employer-service</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-         <springdoc.openapi.version>2.2.0</springdoc.openapi.version>
            <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
        </properties>
 
@@ -23,10 +22,7 @@
                    <groupId>org.springframework.cloud</groupId>
                    <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
            </dependency>
-           <dependency>
-               <groupId>org.springframework.boot</groupId>
-               <artifactId>spring-boot-starter-data-jpa</artifactId>
-           </dependency>
+
            <dependency>
                <groupId>org.postgresql</groupId>
                <artifactId>postgresql</artifactId>
@@ -96,8 +92,22 @@
                <artifactId>swagger-models</artifactId>
                <version>2.2.4</version>
            </dependency>
+           <dependency>
+               <groupId>org.springframework.boot</groupId>
+               <artifactId>spring-boot-starter-data-r2dbc</artifactId>
+           </dependency>
+           <!-- https://mvnrepository.com/artifact/org.postgresql/r2dbc-postgresql -->
+           <dependency>
+               <groupId>org.postgresql</groupId>
+               <artifactId>r2dbc-postgresql</artifactId>
+               <version>1.0.4.RELEASE</version>
+           </dependency>
 
-    </dependencies>
+           <dependency>
+               <groupId>jakarta.persistence</groupId>
+               <artifactId>jakarta.persistence-api</artifactId>
+           </dependency>
+       </dependencies>
 
     <build>
         <plugins>
@@ -105,36 +115,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-              <plugin>
-                 <groupId>org.openapitools</groupId>
-                 <artifactId>openapi-generator-maven-plugin</artifactId>
-                 <version>7.0.1</version>
-                 <executions>
-                     <execution>
-                         <id>Candidate-1.0.0</id>
-                         <goals>
-                             <goal>generate</goal>
-                         </goals>
-                         <configuration>
-                             <inputSpec>${project.basedir}/src/main/resources/open-api-spec/candidate.yml</inputSpec>
-                             <generatorName>spring</generatorName>
-                             <library>spring-boot</library>
-                             <configOptions>
-                                 <packageName>com.devsling.fr</packageName>
-                                 <apiPackage>com.devsling.fr.controller</apiPackage>
-                                 <interfaceOnly>true</interfaceOnly>
-                                 <serializableModel>true</serializableModel>
-                                 <hideGCustomerServiceenerationTimestamp>true</hideGCustomerServiceenerationTimestamp>
-                                 <useTags>true</useTags>
-                                 <reactive>true</reactive>
-                                 <swaggerDocketConfig>false</swaggerDocketConfig>
-                                 <skipFormModel>false</skipFormModel>
-                                 <useJakartaEe>true</useJakartaEe>
-                             </configOptions>
-                         </configuration>
-                     </execution>
-                 </executions>
-             </plugin>
          </plugins>
 
      </build>

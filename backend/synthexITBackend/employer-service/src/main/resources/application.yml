@@ -4,8 +4,8 @@ spring:
   application:
     name: employer-service
 # PostgreSQL Data Source Configuration
-  datasource:
-        url: jdbc:postgresql://localhost:5432/employerDataBase
+  r2dbc:
+        url: r2dbc:postgresql://localhost:5432/employerdatabase
         username: myuser
         password: mypassword
   jpa:
@@ -23,12 +23,6 @@ backend:
   acquireTimeout: 1000
   candidate:
     baseUrl: http://localhost:8082
-    connectTimeout: 3000
-    readTimeout: 3000
-    writeTimeout: 3000
-    responseTimeout: 3000
-  auth:
-    baseUrl: http://localhost:8083
     connectTimeout: 3000
     readTimeout: 3000
     writeTimeout: 3000
