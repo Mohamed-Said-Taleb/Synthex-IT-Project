@@ -19,7 +19,7 @@ spring:
         - id: employer-service
           uri: lb://EMPLOYER-SERVICE
           predicates:
-            - Path=/employer/**
+            - Path=/employers/**
           filters:
             - AuthenticationFilter
 

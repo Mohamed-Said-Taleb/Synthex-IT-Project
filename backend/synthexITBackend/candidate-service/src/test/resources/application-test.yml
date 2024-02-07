@@ -1,0 +1,44 @@
+spring:
+  main:
+    resources:
+      add-mappings: 'false'
+    web: 'null'
+    allow-bean-definition-overriding: 'true'
+    web-application-type: reactive
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+      base-path: /
+  info:
+    git:
+      mode: full
+  endpoint:
+    prometheus:
+      enabled: 'true'
+    health:
+      show-details: always
+      enabled: 'true'
+    info:
+      enabled: 'true'
+backend:
+  maxConnections: 600
+  acquireTimeout: 1000
+  employer:
+    baseUrl: http://localhost:8081
+    connectTimeout: 3000
+    readTimeout: 3000
+    writeTimeout: 3000
+    responseTimeout: 3000
+info:
+  app:
+    name: Candidate-microService
+    version: 0.0.0
+server:
+  jetty:
+    threads:
+      max: '1000'
+  tomcat:
+    threads:
+      max: '1000'

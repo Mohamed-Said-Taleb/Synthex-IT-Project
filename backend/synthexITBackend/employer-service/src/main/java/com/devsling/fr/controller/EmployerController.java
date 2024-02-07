@@ -15,14 +15,14 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/employer")
+@RequestMapping("/employers")
 @RequiredArgsConstructor
 public class EmployerController {
 
     private final EmployerService employerService;
 
 
-    @GetMapping
+    @GetMapping("all")
     public Flux<EmployerDto> getEmployer(){
         return employerService.getEmployer();
     }

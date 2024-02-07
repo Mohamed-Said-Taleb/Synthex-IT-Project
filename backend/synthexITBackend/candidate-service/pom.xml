@@ -9,12 +9,14 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>employer-service</artifactId>
+
+    <artifactId>candidate-service</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
            <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <springdoc.openapi.version>2.2.0</springdoc.openapi.version>
        </properties>
 
        <dependencies>
@@ -63,6 +65,11 @@
                      </exclusion>
                  </exclusions>
              </dependency>
+           <dependency>
+               <groupId>org.springdoc</groupId>
+               <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+               <version>2.1.0</version>
+           </dependency>
              <dependency>
                  <groupId>io.swagger.core.v3</groupId>
                  <artifactId>swagger-core-jakarta</artifactId>
@@ -102,7 +109,16 @@
                <artifactId>r2dbc-postgresql</artifactId>
                <version>1.0.4.RELEASE</version>
            </dependency>
-
+           <dependency>
+               <groupId>io.projectreactor</groupId>
+               <artifactId>reactor-test</artifactId>
+               <scope>test</scope>
+           </dependency>
+           <dependency>
+               <groupId>junit</groupId>
+               <artifactId>junit</artifactId>
+               <scope>test</scope>
+           </dependency>
            <dependency>
                <groupId>jakarta.persistence</groupId>
                <artifactId>jakarta.persistence-api</artifactId>
