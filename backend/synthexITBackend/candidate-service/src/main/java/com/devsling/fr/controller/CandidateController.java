@@ -22,7 +22,7 @@ public class CandidateController {
     private final CandidateService candidateService;
 
 
-    @GetMapping
+    @GetMapping("all")
     public Flux<CandidateDto> getCandidates(){
         return candidateService.getCandidates();
     }

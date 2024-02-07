@@ -18,7 +18,7 @@
         <module>discovery-server</module>
 		<module>api-gateway</module>
 		<module>employer-service</module>
-		<module>employer-service</module>
+		<module>candidate-service</module>
 		<module>authentication-service</module>
 	</modules>
     <properties>
