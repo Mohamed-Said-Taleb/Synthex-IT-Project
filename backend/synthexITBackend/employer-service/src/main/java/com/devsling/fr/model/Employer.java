@@ -1,8 +1,5 @@
 package com.devsling.fr.model;
 
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +9,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 
 import java.io.Serializable;
-import java.util.List;
 
 
 @Builder
@@ -34,4 +30,13 @@ public class Employer implements Serializable {
 
     @Column("email")
     private String email;
+
+    @Column("sector")
+    private String sector;
+
+    @Column("address")
+    private String address;
+
+    @Column("phone_number")
+    private String phoneNumber;
 }

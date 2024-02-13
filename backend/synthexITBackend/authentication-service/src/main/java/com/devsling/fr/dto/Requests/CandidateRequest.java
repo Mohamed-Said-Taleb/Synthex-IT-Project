@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder(toBuilder = true)
 @AllArgsConstructor
@@ -18,4 +20,10 @@ public class CandidateRequest {
     private String lastName;
     @JsonProperty("email")
     private String email;
+    @JsonProperty("skills")
+    private List<String> skills;
+    @JsonProperty("resumeUrl")
+    private String resumeUrl;
+    @JsonProperty("professionalExperiences")
+    private List<String> professionalExperiences;
 }

@@ -6,13 +6,15 @@ import com.devsling.fr.dto.Responses.GetForgetPasswordResponse;
 import com.devsling.fr.dto.Responses.GetTokenResponse;
 import com.devsling.fr.dto.Responses.GetTokenValidationResponse;
 import com.devsling.fr.dto.Responses.RegisterResponse;
+import com.devsling.fr.dto.Responses.VerificationResponse;
 import com.devsling.fr.service.AuthService;
-import com.devsling.fr.service.ForgetPasswordService;
+import com.devsling.fr.service.EmailSenderService;
 import com.devsling.fr.tools.Constants;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +28,7 @@ import reactor.core.publisher.Mono;
 public class AuthController {
 
     private final AuthService authService;
-    private final ForgetPasswordService forgetPasswordService;
+    private final EmailSenderService emailSenderService;
 
     @PostMapping("/register")
     public Mono<ResponseEntity<RegisterResponse>> register(@Valid @RequestBody SignUpFormRequest signUpFormRequest) {
@@ -63,8 +65,8 @@ public class AuthController {
     }
 
     @PostMapping("/password-request")
-    public  Mono<ResponseEntity<GetForgetPasswordResponse>> passwordRequest(@RequestParam("email") String email) {
-        return forgetPasswordService.passwordResetMail(email)
+    public  Mono<ResponseEntity<GetForgetPasswordResponse>> passwordRequestWithEmail(@RequestParam("email") String email) {
+        return emailSenderService.passwordResetMail(email)
                 .map(tokenValidationResponse -> {
                     if (tokenValidationResponse.getMessage().equals(Constants.WRONG_PASSWORD)) {
                         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(tokenValidationResponse);
@@ -75,12 +77,22 @@ public class AuthController {
 
     @PostMapping("/reset-password")
     public Mono<ResponseEntity<GetTokenValidationResponse>> resetPassword(@RequestParam("token") String token, @RequestParam("password") String password, @RequestParam("confirmationPassword") String confirmationPassword) {
-        return forgetPasswordService.validatePasswordReset(token, password, confirmationPassword)
+        return emailSenderService.validatePasswordReset(token, password, confirmationPassword)
                 .map(tokenValidationResponse ->{
                     if (tokenValidationResponse.getMessage().equals(Constants.WRONG_PASSWORD)){
                         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(tokenValidationResponse);
                     }
                     return ResponseEntity.status(HttpStatus.OK).body(tokenValidationResponse);
+                } );
+    }
+    @PostMapping("/activateAccount-with-email")
+    public Mono<ResponseEntity<VerificationResponse>> activateAccountWithEmail(@RequestParam("token") String token) {
+        return authService.verifyAccountWithEmail(token)
+                .map(verificationResponse ->{
+                    if (verificationResponse.getMessage().equals(Constants.FAILED_VERIFICATION)){
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(verificationResponse);
+                    }
+                    return ResponseEntity.status(HttpStatus.OK).body(verificationResponse);
                 } );
     }
 }

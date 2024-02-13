@@ -22,6 +22,16 @@ public class Constants {
     public static final String  INVALID_USERNAME_OR_PASSWORD = "Invalid username or password";
     public static final String USER_REGISTERED_SUCCESSFULLY = "User registered successfully";
     public static final String WRONG_PASSWORD = "Weak Password: Password should contain at least one uppercase letter, one lowercase letter, one digit, and one special character.\"";
+    public static final String SUCCESS_VERIFICATION ="Verification succeeded";
+    public static final String FAILED_VERIFICATION ="Verification failed";
+
+    public static final String REGISTRATION_CANDIDATE_MESSAGE ="Congratulations! You have successfully registered as a candidate. \" +\n" +
+            "                                                \"To activate your account, please check your email inbox and verify your email address. \" +\n" +
+            "                                                \"Once verified, you will be able to access all features of our platform.";
+ public static final String REGISTRATION_EMPLOYER_MESSAGE ="Congratulations! You have successfully registered as a candidate. \" +\n" +
+            "                                                \"To activate your account, please check your email inbox and verify your email address. \" +\n" +
+            "                                                \"Once verified, you will be able to access all features of our platform.";
+
 
 
 

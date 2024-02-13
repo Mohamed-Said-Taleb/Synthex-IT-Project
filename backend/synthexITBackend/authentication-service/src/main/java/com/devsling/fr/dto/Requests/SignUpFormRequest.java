@@ -6,11 +6,20 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
 public class SignUpFormRequest {
+
+    @JsonProperty("firstName")
+    private String firstName;
+
+    @JsonProperty("lastName")
+    private String lastName;
+
     @JsonProperty("username")
     private String username;
 
@@ -25,4 +34,10 @@ public class SignUpFormRequest {
 
     @JsonProperty("role")
     private String role_Name;
+    @JsonProperty("skills")
+    private List<String> skills;
+    @JsonProperty("resumeUrl")
+    private String resumeUrl;
+    @JsonProperty("professionalExperiences")
+    private List<String> professionalExperiences;
 }
