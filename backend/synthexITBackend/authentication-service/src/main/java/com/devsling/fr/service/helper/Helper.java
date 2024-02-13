@@ -6,9 +6,8 @@ import com.devsling.fr.dto.Responses.GetForgetPasswordResponse;
 import com.devsling.fr.dto.Responses.RegisterResponse;
 import com.devsling.fr.entities.AppUser;
 import com.devsling.fr.entities.ForgetPasswordToken;
-import com.devsling.fr.repository.ForgetPasswordRepository;
+import com.devsling.fr.repository.MailSenderRepository;
 import com.devsling.fr.repository.UserRepository;
-import com.devsling.fr.service.ForgetPasswordService;
 import com.devsling.fr.service.UserService;
 import com.devsling.fr.tools.Constants;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +23,7 @@ public class Helper {
     private final UserRepository userRepository;
     private final UserService userService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final ForgetPasswordRepository forgetPasswordRepository;
+    private final MailSenderRepository mailSenderRepository;
 
 
     public Boolean isValidEmailAddress(String email) {
@@ -51,6 +50,7 @@ public class Helper {
                     .message("Username is already in use")
                     .build();
         }
+
 
         if (signUpFormRequest.getUsername().isEmpty()) {
             return RegisterResponse.builder().message("Username should not be empty").build();
@@ -86,7 +86,14 @@ public class Helper {
         if (loginFormRequest.getPassword() == null || loginFormRequest.getPassword().isEmpty()) {
             return RegisterResponse.builder().message("Password should not be empty").build();
         }
+        AppUser user = userRepository.findByUsername(loginFormRequest.getUsername());
 
+        if (!user.isEnabled()) {
+            return RegisterResponse
+                    .builder()
+                    .message("Your account is not enabled. Please verify your email.")
+                    .build();
+        }
         return RegisterResponse.builder().message("Validation successful").build();
     }
 
@@ -133,7 +140,7 @@ public class Helper {
         saveForgetPasswordToken(forgetPasswordToken);
     }
     public void saveForgetPasswordToken(ForgetPasswordToken token) {
-        forgetPasswordRepository.save(token);
+        mailSenderRepository.save(token);
     }
 
     private boolean containsUppercaseLetter(String password) {

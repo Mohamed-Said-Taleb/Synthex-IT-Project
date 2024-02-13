@@ -2,6 +2,7 @@ package com.devsling.fr.entities;
 
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -33,13 +34,16 @@ public class AppUser implements Serializable {
 
     private String username;
 
-    private Boolean enabled;
+    private boolean enabled;
 
     private String password;
 
     private String email;
 
     private String gender;
+
+    @Column(name = "verification_code",updatable = false)
+    private String verificationCode;
 
 
     @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)

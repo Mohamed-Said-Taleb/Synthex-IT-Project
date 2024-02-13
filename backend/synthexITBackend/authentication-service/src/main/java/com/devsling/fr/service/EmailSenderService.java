@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import com.devsling.fr.dto.Responses.GetTokenValidationResponse;
 import reactor.core.publisher.Mono;
 
-public interface ForgetPasswordService {
+public interface EmailSenderService {
 
     Mono<GetTokenValidationResponse> validatePasswordReset(String token, String password, String confirmationPassword);
 
@@ -19,5 +19,5 @@ public interface ForgetPasswordService {
     String generateToken();
 
     ForgetPasswordToken getByToken(String token);
-    void sendMail(String username,String to,String object,String emailLink) throws MessagingException, UnsupportedEncodingException;
+    void sendMail(String username,String to,String object,String emailLink,String emailTemplate) throws MessagingException, UnsupportedEncodingException;
 }

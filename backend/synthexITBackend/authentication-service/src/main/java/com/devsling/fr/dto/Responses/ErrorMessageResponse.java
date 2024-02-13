@@ -12,7 +12,8 @@ import java.io.Serializable;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthErrorMessageResponse implements Serializable {
+public class ErrorMessageResponse implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     @JsonIgnore
@@ -24,4 +25,9 @@ public class AuthErrorMessageResponse implements Serializable {
     @JsonIgnore
     private String service;
 
+    @JsonIgnore
+    private String dataLabel;
+
+    @JsonIgnore
+    private String subCode;
 }
