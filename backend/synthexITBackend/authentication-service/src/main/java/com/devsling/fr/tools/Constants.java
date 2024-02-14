@@ -25,12 +25,13 @@ public class Constants {
     public static final String SUCCESS_VERIFICATION ="Verification succeeded";
     public static final String FAILED_VERIFICATION ="Verification failed";
 
-    public static final String REGISTRATION_CANDIDATE_MESSAGE ="Congratulations! You have successfully registered as a candidate. \" +\n" +
-            "                                                \"To activate your account, please check your email inbox and verify your email address. \" +\n" +
-            "                                                \"Once verified, you will be able to access all features of our platform.";
- public static final String REGISTRATION_EMPLOYER_MESSAGE ="Congratulations! You have successfully registered as a candidate. \" +\n" +
-            "                                                \"To activate your account, please check your email inbox and verify your email address. \" +\n" +
-            "                                                \"Once verified, you will be able to access all features of our platform.";
+    public static final String REGISTRATION_CANDIDATE_MESSAGE = "Congratulations! You have successfully registered as a candidate.\n"
+            + "To activate your account, please check your email inbox and verify your email address.\n"
+            + "Once verified, you will be able to access all features of our platform";
+
+    public static final String REGISTRATION_EMPLOYER_MESSAGE = "Congratulations! You have successfully registered as an Employer.\n"
+            + "To activate your account, please check your email inbox and verify your email address.\n"
+            + "Once verified, you will be able to access all features of our platform";
 
 
 
