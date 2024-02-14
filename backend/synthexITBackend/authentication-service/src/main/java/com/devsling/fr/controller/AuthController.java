@@ -85,7 +85,7 @@ public class AuthController {
                     return ResponseEntity.status(HttpStatus.OK).body(tokenValidationResponse);
                 } );
     }
-    @PostMapping("/activateAccount-with-email")
+    @GetMapping("/activate-account")
     public Mono<ResponseEntity<VerificationResponse>> activateAccountWithEmail(@RequestParam("token") String token) {
         return authService.verifyAccountWithEmail(token)
                 .map(verificationResponse ->{

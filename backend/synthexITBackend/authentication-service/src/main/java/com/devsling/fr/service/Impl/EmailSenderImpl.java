@@ -12,6 +12,8 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -36,10 +38,15 @@ public class EmailSenderImpl implements EmailSenderService {
     private final Helper helper;
     private final TemplateEngine thymeleafTemplateEngine;
 
-    public static final String EMAIL_LINK = "emaillink";
+    public static final String EMAIL_LINK = "emailVerificationLink";
     public static final String USERNAME = "username";
     public static final String FORGET_PASSWORD_EMAIL_TEMPLATE = "reset-password-email-template";
 
+    private static final Logger logger = LoggerFactory.getLogger(EmailSenderImpl.class);
+
+    //should change this to ip address of the deployment
+    public static final String  LINK = "http://localhost:8080/auth/";
+    public static final String  TOKEN = "?token=";
 
 
 
@@ -54,12 +61,12 @@ public class EmailSenderImpl implements EmailSenderService {
     }
 
     @Override
-    public void sendMail(String username, String receiver, String subject, String emailLink, String emailTemplate) {
+    public void sendMail(String username, String receiver, String subject, String emailLink, String emailTemplate,String api) {
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message);
             Context context = new Context();
-            context.setVariable(EMAIL_LINK, emailLink);
+            context.setVariable(EMAIL_LINK, LINK+api+TOKEN+emailLink);
             context.setVariable(USERNAME, username);
             String emailContent = thymeleafTemplateEngine.process(emailTemplate, context);
             helper.setText(emailContent, true);
@@ -68,7 +75,7 @@ public class EmailSenderImpl implements EmailSenderService {
             helper.setTo(receiver);
             javaMailSender.send(message);
         } catch (MessagingException | UnsupportedEncodingException e) {
-            e.printStackTrace();
+            logger.error("Error occurred while sending email: {}", e.getMessage(), e);
         }
     }
 
@@ -112,7 +119,12 @@ public class EmailSenderImpl implements EmailSenderService {
         AppUser user = userService.findUserByEmail(email);
         ForgetPasswordToken forgetPasswordToken = createForgetPasswordToken(user);
 
-        sendMail(user.getUsername(), user.getEmail(), "Password reset link", "link",FORGET_PASSWORD_EMAIL_TEMPLATE);
+        sendMail(user.getUsername(),
+                user.getEmail(),
+                "Password reset link",
+                forgetPasswordToken.getToken(),
+                FORGET_PASSWORD_EMAIL_TEMPLATE,
+                "reset-password");
 
         helper.saveForgetPasswordToken(forgetPasswordToken);
         return Mono.just(new GetForgetPasswordResponse("Password reset email sent successfully", forgetPasswordToken.getToken())) ;

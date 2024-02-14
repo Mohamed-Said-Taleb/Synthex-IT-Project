@@ -19,5 +19,5 @@ public interface EmailSenderService {
     String generateToken();
 
     ForgetPasswordToken getByToken(String token);
-    void sendMail(String username,String to,String object,String emailLink,String emailTemplate) throws MessagingException, UnsupportedEncodingException;
+    void sendMail(String username,String to,String object,String emailLink,String emailTemplate,String api) throws MessagingException, UnsupportedEncodingException;
 }

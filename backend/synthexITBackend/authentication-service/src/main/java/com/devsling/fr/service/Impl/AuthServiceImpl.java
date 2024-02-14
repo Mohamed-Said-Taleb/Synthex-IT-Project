@@ -10,7 +10,6 @@ import com.devsling.fr.dto.Responses.RegisterResponse;
 import com.devsling.fr.dto.Responses.VerificationResponse;
 import com.devsling.fr.entities.AppRole;
 import com.devsling.fr.entities.AppUser;
-import com.devsling.fr.repository.RoleRepository;
 import com.devsling.fr.repository.UserRepository;
 import com.devsling.fr.security.JwtUtils;
 import com.devsling.fr.service.AuthService;
@@ -79,7 +78,13 @@ public class AuthServiceImpl implements AuthService {
                     return candidateApiClient.saveCandidate(candidateRequest)
                             .flatMap(candidateCreateResponse -> {
                                 userRepository.save(appUserBd);
-                                emailSender.sendMail(appUserBd.getUsername(),appUserBd.getEmail(),"Activate your SynthexIT account","link",VERIFICATION_EMAIL_TEMPLATE);
+                                emailSender.sendMail(appUserBd.getUsername(),
+                                        appUserBd.getEmail(),
+                                        "Activate your SynthexIT account",
+                                        appUserBd.getVerificationCode(),
+                                        VERIFICATION_EMAIL_TEMPLATE,
+                                        "/activate-account"
+                                        );
 
                                 return Mono.just(RegisterResponse.builder()
                                         .message(Constants.REGISTRATION_CANDIDATE_MESSAGE)
@@ -99,7 +104,12 @@ public class AuthServiceImpl implements AuthService {
                     return employerApiClient.saveEmployer(employerCreateRequest)
                             .flatMap(candidateCreateResponse -> {
                                 userRepository.save(appUserBd);
-                                emailSender.sendMail(appUserBd.getUsername(),appUserBd.getEmail(),"Activate your SynthexIT account","link",VERIFICATION_EMAIL_TEMPLATE);
+                                emailSender.sendMail(appUserBd.getUsername(),
+                                        appUserBd.getEmail(),
+                                        "Activate your SynthexIT account",
+                                        appUserBd.getVerificationCode(),
+                                        VERIFICATION_EMAIL_TEMPLATE,
+                                        "/activate-account");
                                 return Mono.just(RegisterResponse.builder()
                                         .message(Constants.REGISTRATION_EMPLOYER_MESSAGE)
                                         .build());
@@ -177,18 +187,21 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Mono<VerificationResponse> verifyAccountWithEmail(String token) {
-        Optional<AppUser> user =userRepository.findByVerificationCode(token);
-        if (user.isPresent()) {
-            user.get().setEnabled(true);
-            return Mono.just(VerificationResponse
-                    .builder()
-                    .message(Constants.SUCCESS_VERIFICATION)
-                    .build());
-        } else {
-            return Mono.just(VerificationResponse
-                    .builder()
-                    .message(Constants.FAILED_VERIFICATION)
-                    .build());
-        }
+        return Mono.defer(() -> {
+            Optional<AppUser> optionalUser = userRepository.findByVerificationCode(token);
+            if (optionalUser.isPresent()) {
+                AppUser user = optionalUser.get();
+                user.setEnabled(true);
+                userRepository.save(user);
+                return Mono.just(VerificationResponse.builder()
+                        .message(Constants.SUCCESS_VERIFICATION)
+                        .build());
+            } else {
+                return Mono.just(VerificationResponse.builder()
+                        .message(Constants.FAILED_VERIFICATION)
+                        .build());
+            }
+        });
     }
+
 }

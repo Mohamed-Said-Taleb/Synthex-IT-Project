@@ -28,7 +28,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/auth/validate-token").permitAll()
                         .requestMatchers(HttpMethod.POST,"/auth/password-request").permitAll()
                         .requestMatchers(HttpMethod.POST,"/auth/reset-password").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/auth/activateAccount-with-email").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/auth/activate-account").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
