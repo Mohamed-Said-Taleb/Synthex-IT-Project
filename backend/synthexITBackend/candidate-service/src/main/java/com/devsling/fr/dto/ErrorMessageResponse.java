@@ -1,6 +1,7 @@
 package com.devsling.fr.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,22 +13,15 @@ import java.io.Serializable;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class ErrorMessageResponse implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    @JsonIgnore
+public class ErrorMessageResponse  {
+    @JsonProperty("code")
     private int code;
-
-    @JsonIgnore
+    @JsonProperty("message")
     private String message;
-
-    @JsonIgnore
+    @JsonProperty("service")
     private String service;
-
-    @JsonIgnore
+    @JsonProperty("dataLabel")
     private String dataLabel;
-
-    @JsonIgnore
+    @JsonProperty("subCode")
     private String subCode;
 }

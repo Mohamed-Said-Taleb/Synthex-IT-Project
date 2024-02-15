@@ -13,7 +13,7 @@ import java.util.List;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class CandidateCreateResponse {
+public class CandidateProfileResponse {
     @JsonProperty("firstName")
     private String firstName;
     @JsonProperty("lastName")

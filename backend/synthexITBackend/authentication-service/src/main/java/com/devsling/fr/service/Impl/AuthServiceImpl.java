@@ -54,6 +54,7 @@ public class AuthServiceImpl implements AuthService {
         RegisterResponse validationResponse = helper.validateSignUpFormRequest(signUpFormRequest);
         if ("Validation successful".equals(validationResponse.getMessage())) {
             if (signUpFormRequest.getRole_Name() != null) {
+
                 AppUser appUserBd = AppUser.builder()
                         .username(signUpFormRequest.getUsername())
                         .email(signUpFormRequest.getEmail())

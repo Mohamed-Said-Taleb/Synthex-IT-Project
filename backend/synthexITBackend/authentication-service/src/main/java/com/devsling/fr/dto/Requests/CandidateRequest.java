@@ -13,7 +13,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CandidateRequest {
-
+    @JsonProperty("id")
+    String id;
     @JsonProperty("firstName")
     private String firstName;
     @JsonProperty("lastName")
