@@ -10,8 +10,6 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Data
-@Builder(toBuilder = true)
-@AllArgsConstructor
 @NoArgsConstructor
 public class CandidateDto {
 
@@ -27,6 +25,6 @@ public class CandidateDto {
     private String resumeUrl;
     @JsonProperty("professionalExperiences")
     private List<String> professionalExperiences;
-    @JsonIgnore
+    @JsonProperty("errorResponse")
     private ErrorMessageResponse errorResponse;
 }

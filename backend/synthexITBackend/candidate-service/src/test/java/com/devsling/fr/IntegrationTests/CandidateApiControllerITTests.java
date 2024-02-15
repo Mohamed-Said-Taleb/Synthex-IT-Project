@@ -39,8 +39,10 @@ class CandidateApiControllerITTests {
     @Test
     public void getCandidatesOkTestWithStatus200() {
 
-        Flux<CandidateDto> candidateDtoFlux = Flux.just(new CandidateDto("test1", "test1", "test1@gmail.com"),
-                new CandidateDto("test2", "test2", "test2"));
+        Flux<CandidateDto> candidateDtoFlux = Flux.just(CandidateDto.builder()
+                .email("test1@gmail.com").build(),
+                CandidateDto.builder()
+                        .email("test@gmail.com").build());
         when(candidateService.getCandidates()).thenReturn(candidateDtoFlux);
 
         webTestClient.get()
@@ -57,7 +59,8 @@ class CandidateApiControllerITTests {
     public void getCandidateByIdOkTestWithStatus200() {
 
         long candidateId = 1L;
-        CandidateDto candidateDto = new CandidateDto("test", "test", "test@gmail.com");
+        CandidateDto candidateDto = CandidateDto.builder()
+                .email("test@gmail.com").build();
         when(candidateService.getCandidate(candidateId)).thenReturn(Mono.just(candidateDto));
 
         webTestClient.get()
@@ -72,7 +75,8 @@ class CandidateApiControllerITTests {
     @Test
     public void saveCandidateOkTestWithStatus200() {
 
-        CandidateDto candidateDto = new CandidateDto("test", "test", "test@gmail.com");
+        CandidateDto candidateDto = CandidateDto.builder()
+                .email("test@gmail.com").build();
         when(candidateService.saveCandidate(any())).thenReturn(Mono.just(candidateDto));
 
         webTestClient.post()
@@ -80,7 +84,7 @@ class CandidateApiControllerITTests {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(candidateDto), CandidateDto.class)
                 .exchange()
-                .expectStatus().isOk()
+                .expectStatus().isCreated()
                 .expectBody(CandidateDto.class)
                 .isEqualTo(candidateDto);
     }
@@ -89,7 +93,8 @@ class CandidateApiControllerITTests {
     public void updateCandidateOkTestWithStatus200() {
 
         long candidateId = 1L;
-        CandidateDto candidateDto = new CandidateDto("test", "test", "test@gmail.com");
+        CandidateDto candidateDto = CandidateDto.builder()
+                .email("test@gmail.com").build();
         when(candidateService.updateCandidate(any(), eq(candidateId))).thenReturn(Mono.just(candidateDto));
 
         webTestClient.put()

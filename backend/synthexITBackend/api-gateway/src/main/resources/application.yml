@@ -53,3 +53,15 @@ backend:
     readTimeout: 3000
     writeTimeout: 3000
     responseTimeout: 3000
+  candidate:
+    baseUrl: http://localhost:8082
+    connectTimeout: 3000
+    readTimeout: 3000
+    writeTimeout: 3000
+    responseTimeout: 3000
+  employer:
+    baseUrl: http://localhost:8081
+    connectTimeout: 3000
+    readTimeout: 3000
+    writeTimeout: 3000
+    responseTimeout: 3000

@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class EmployerCreateRequest {
 
+    @JsonProperty("id")
+    String id;
     @JsonProperty("firstName")
     private String firstName;
     @JsonProperty("lastName")

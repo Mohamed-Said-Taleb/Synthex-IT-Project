@@ -60,7 +60,8 @@ public class CandidateServiceTests {
 
     @Test
     public void testSaveCandidate() {
-        CandidateDto candidateDto = new CandidateDto("test", "test", "test@gmail.com");
+        CandidateDto candidateDto = CandidateDto.builder()
+                .email("test@gmail.com").build();
         Candidate candidate = Candidate.builder().email("test@gmail.com").firstName("test").lastName("test").build();
         when(candidateRepository.save(any())).thenReturn(Mono.just(candidate));
 
@@ -70,13 +71,19 @@ public class CandidateServiceTests {
 
     @Test
     public void testUpdateCandidate() {
-        Long id = 1L;
-        CandidateDto candidateDto = new CandidateDto("updated", "updated", "updated@gmail.com");
+        Long candidateId = 1L;
+
+
+        CandidateDto candidateDto = CandidateDto.builder()
+                .email("test@gmail.com")
+                .firstName("updated")
+                .lastName("updated")
+                .build();
         Candidate candidate = Candidate.builder().email("updated@gmail.com").firstName("updated").lastName("updated").build();
-        when(candidateRepository.findById(id)).thenReturn(Mono.just(candidate));
+        when(candidateRepository.findById(candidateId)).thenReturn(Mono.just(candidate));
         when(candidateRepository.save(any())).thenReturn(Mono.just(candidate));
 
-        Mono<CandidateDto> result = candidateService.updateCandidate(Mono.just(candidateDto), id);
+        Mono<CandidateDto> result = candidateService.updateCandidate(Mono.just(candidateDto), candidateId);
 
         Assertions.assertEquals("updated", Objects.requireNonNull(result.block()).getFirstName());
     }
