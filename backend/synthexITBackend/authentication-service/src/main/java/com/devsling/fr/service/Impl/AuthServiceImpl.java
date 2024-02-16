@@ -4,20 +4,25 @@ import com.devsling.fr.dto.Requests.CandidateRequest;
 import com.devsling.fr.dto.Requests.EmployerCreateRequest;
 import com.devsling.fr.dto.Requests.LoginFormRequest;
 import com.devsling.fr.dto.Requests.SignUpFormRequest;
+import com.devsling.fr.dto.Responses.GetForgetPasswordResponse;
 import com.devsling.fr.dto.Responses.GetTokenResponse;
 import com.devsling.fr.dto.Responses.GetTokenValidationResponse;
 import com.devsling.fr.dto.Responses.RegisterResponse;
 import com.devsling.fr.dto.Responses.VerificationResponse;
 import com.devsling.fr.entities.AppRole;
 import com.devsling.fr.entities.AppUser;
+import com.devsling.fr.entities.ForgetPasswordToken;
 import com.devsling.fr.repository.UserRepository;
 import com.devsling.fr.security.JwtUtils;
 import com.devsling.fr.service.AuthService;
+import com.devsling.fr.service.EmailSenderService;
+import com.devsling.fr.service.UserService;
 import com.devsling.fr.service.helper.Helper;
 import com.devsling.fr.service.out.CandidateApiClient;
 import com.devsling.fr.service.out.EmployerApiClient;
 import com.devsling.fr.tools.Constants;
 import com.devsling.fr.tools.RoleName;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,8 +33,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.Optional;
+
+import static com.devsling.fr.tools.Constants.WRONG_PASSWORD;
 
 @Service
 @RequiredArgsConstructor
@@ -44,15 +52,20 @@ public class AuthServiceImpl implements AuthService {
     private final CandidateApiClient candidateApiClient;
     private final EmployerApiClient employerApiClient;
     private final EmailSenderImpl emailSender;
+    private final EmailSenderService emailSenderService;
+    private final UserService userService;
 
     public static final String  VERIFICATION_EMAIL_TEMPLATE = "verification-email-template";
+    public static final String  SUBJECT = "Activate your SynthexIT account";
+    public static final String  ACTIVATE_ACCOUNT_PATH = "/activate-account";
 
+    public static final String FORGET_PASSWORD_EMAIL_TEMPLATE = "reset-password-email-template";
 
 
     @Override
     public Mono<RegisterResponse> signup(SignUpFormRequest signUpFormRequest) {
         RegisterResponse validationResponse = helper.validateSignUpFormRequest(signUpFormRequest);
-        if ("Validation successful".equals(validationResponse.getMessage())) {
+        if (Constants.SUCCESS_VALIDATION.equals(validationResponse.getMessage())) {
             if (signUpFormRequest.getRole_Name() != null) {
 
                 AppUser appUserBd = AppUser.builder()
@@ -81,10 +94,10 @@ public class AuthServiceImpl implements AuthService {
                                 userRepository.save(appUserBd);
                                 emailSender.sendMail(appUserBd.getUsername(),
                                         appUserBd.getEmail(),
-                                        "Activate your SynthexIT account",
+                                        SUBJECT ,
                                         appUserBd.getVerificationCode(),
                                         VERIFICATION_EMAIL_TEMPLATE,
-                                        "/activate-account"
+                                        ACTIVATE_ACCOUNT_PATH
                                         );
 
                                 return Mono.just(RegisterResponse.builder()
@@ -107,10 +120,10 @@ public class AuthServiceImpl implements AuthService {
                                 userRepository.save(appUserBd);
                                 emailSender.sendMail(appUserBd.getUsername(),
                                         appUserBd.getEmail(),
-                                        "Activate your SynthexIT account",
+                                        SUBJECT,
                                         appUserBd.getVerificationCode(),
                                         VERIFICATION_EMAIL_TEMPLATE,
-                                        "/activate-account");
+                                        ACTIVATE_ACCOUNT_PATH);
                                 return Mono.just(RegisterResponse.builder()
                                         .message(Constants.REGISTRATION_EMPLOYER_MESSAGE)
                                         .build());
@@ -134,9 +147,6 @@ public class AuthServiceImpl implements AuthService {
                     .build());
         }
     }
-
-
-
     @Override
     public Mono<GetTokenResponse> getToken(LoginFormRequest loginFormRequest) {
         RegisterResponse validationResponse = helper.validateLoginFormRequest(loginFormRequest);
@@ -185,7 +195,6 @@ public class AuthServiceImpl implements AuthService {
                     .build());
         }
     }
-
     @Override
     public Mono<VerificationResponse> verifyAccountWithEmail(String token) {
         return Mono.defer(() -> {
@@ -205,4 +214,58 @@ public class AuthServiceImpl implements AuthService {
         });
     }
 
+    @Override
+    public  Mono<GetForgetPasswordResponse> passwordResetMail(String email) throws MessagingException, UnsupportedEncodingException {
+        GetForgetPasswordResponse validationResponse = helper.validatePasswordReset(email);
+        if (!validationResponse.getMessage().equals("Validation successful")) {
+            return Mono.just(validationResponse);
+        }
+
+        AppUser user = userService.findUserByEmail(email);
+        ForgetPasswordToken forgetPasswordToken = createForgetPasswordToken(user);
+
+        emailSenderService.sendMail(user.getUsername(),
+                user.getEmail(),
+                "Password reset link",
+                forgetPasswordToken.getToken(),
+                FORGET_PASSWORD_EMAIL_TEMPLATE,
+                "reset-password");
+
+        helper.saveForgetPasswordToken(forgetPasswordToken);
+        return Mono.just(new GetForgetPasswordResponse("Password reset email sent successfully", forgetPasswordToken.getToken())) ;
+    }
+    private ForgetPasswordToken createForgetPasswordToken(AppUser user) {
+        return ForgetPasswordToken.builder().expireTime(helper.expireTimeRange()).isUsed(false).appUser(user).token(emailSenderService.generateToken()).build();
+    }
+
+    @Override
+    public Mono<GetTokenValidationResponse> validatePasswordReset(String token, String password, String confirmationPassword) {
+        try {
+            if (password.equals(confirmationPassword)) {
+                ForgetPasswordToken forgetPasswordToken = emailSenderService.getByToken(token);
+                if (helper.isValidToken(forgetPasswordToken)) {
+                    if(helper.isStrongerPassword(password)){
+                        helper.resetPasswordAndSave(forgetPasswordToken,forgetPasswordToken.getAppUser(), password);
+                        return  Mono.just(new GetTokenValidationResponse(WRONG_PASSWORD));
+                    }else {
+                        return Mono.just(GetTokenValidationResponse.builder()
+                                .message("Password reset successful")
+                                .build());
+                    }
+
+                } else {
+                    return Mono.just(GetTokenValidationResponse.builder()
+                            .message("Invalid or used/expired token")
+                            .build());
+                }
+            } else {
+                return Mono.just(GetTokenValidationResponse.builder()
+                        .message("Password and confirmation password do not match")
+                        .build());
+            }
+        } catch (Exception e) {
+            return Mono.just(GetTokenValidationResponse.builder()
+                    .message("Error resetting password")
+                    .build());}
+    }
 }

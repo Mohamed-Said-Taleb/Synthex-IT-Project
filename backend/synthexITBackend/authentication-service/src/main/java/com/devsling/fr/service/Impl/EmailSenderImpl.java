@@ -34,13 +34,10 @@ public class EmailSenderImpl implements EmailSenderService {
 
     private final JavaMailSender javaMailSender;
     private final MailSenderRepository mailSenderRepository;
-    private final UserService userService;
-    private final Helper helper;
     private final TemplateEngine thymeleafTemplateEngine;
 
     public static final String EMAIL_LINK = "emailVerificationLink";
     public static final String USERNAME = "username";
-    public static final String FORGET_PASSWORD_EMAIL_TEMPLATE = "reset-password-email-template";
 
     private static final Logger logger = LoggerFactory.getLogger(EmailSenderImpl.class);
 
@@ -77,60 +74,5 @@ public class EmailSenderImpl implements EmailSenderService {
         } catch (MessagingException | UnsupportedEncodingException e) {
             logger.error("Error occurred while sending email: {}", e.getMessage(), e);
         }
-    }
-
-    @Override
-    public Mono<GetTokenValidationResponse> validatePasswordReset(String token, String password, String confirmationPassword) {
-        try {
-            if (password.equals(confirmationPassword)) {
-                ForgetPasswordToken forgetPasswordToken = getByToken(token);
-                if (helper.isValidToken(forgetPasswordToken)) {
-                    if(helper.isStrongerPassword(password)){
-                        helper.resetPasswordAndSave(forgetPasswordToken,forgetPasswordToken.getAppUser(), password);
-                        return  Mono.just(new GetTokenValidationResponse(WRONG_PASSWORD));
-                    }else {
-                        return Mono.just(GetTokenValidationResponse.builder()
-                                .message("Password reset successful")
-                                .build());
-                    }
-
-                } else {
-                    return Mono.just(GetTokenValidationResponse.builder()
-                            .message("Invalid or used/expired token")
-                            .build());
-                }
-            } else {
-                return Mono.just(GetTokenValidationResponse.builder()
-                        .message("Password and confirmation password do not match")
-                        .build());
-            }
-        } catch (Exception e) {
-            return Mono.just(GetTokenValidationResponse.builder()
-                    .message("Error resetting password")
-                    .build());}
-    }
-    @Override
-    public  Mono<GetForgetPasswordResponse> passwordResetMail(String email) {
-        GetForgetPasswordResponse validationResponse = helper.validatePasswordReset(email);
-        if (!validationResponse.getMessage().equals("Validation successful")) {
-            return Mono.just(validationResponse);
-        }
-
-        AppUser user = userService.findUserByEmail(email);
-        ForgetPasswordToken forgetPasswordToken = createForgetPasswordToken(user);
-
-        sendMail(user.getUsername(),
-                user.getEmail(),
-                "Password reset link",
-                forgetPasswordToken.getToken(),
-                FORGET_PASSWORD_EMAIL_TEMPLATE,
-                "reset-password");
-
-        helper.saveForgetPasswordToken(forgetPasswordToken);
-        return Mono.just(new GetForgetPasswordResponse("Password reset email sent successfully", forgetPasswordToken.getToken())) ;
-    }
-
-    private ForgetPasswordToken createForgetPasswordToken(AppUser user) {
-        return ForgetPasswordToken.builder().expireTime(helper.expireTimeRange()).isUsed(false).appUser(user).token(generateToken()).build();
     }
 }
