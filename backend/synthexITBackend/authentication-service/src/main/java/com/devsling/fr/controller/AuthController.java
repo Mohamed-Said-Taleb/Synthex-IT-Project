@@ -10,6 +10,7 @@ import com.devsling.fr.dto.Responses.VerificationResponse;
 import com.devsling.fr.service.AuthService;
 import com.devsling.fr.service.EmailSenderService;
 import com.devsling.fr.tools.Constants;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,13 +23,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
+import java.io.UnsupportedEncodingException;
+
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
     private final AuthService authService;
-    private final EmailSenderService emailSenderService;
 
     @PostMapping("/register")
     public Mono<ResponseEntity<RegisterResponse>> register(@Valid @RequestBody SignUpFormRequest signUpFormRequest) {
@@ -65,8 +67,8 @@ public class AuthController {
     }
 
     @PostMapping("/password-request")
-    public  Mono<ResponseEntity<GetForgetPasswordResponse>> passwordRequestWithEmail(@RequestParam("email") String email) {
-        return emailSenderService.passwordResetMail(email)
+    public  Mono<ResponseEntity<GetForgetPasswordResponse>> passwordRequestWithEmail(@RequestParam("email") String email) throws MessagingException, UnsupportedEncodingException {
+        return authService.passwordResetMail(email)
                 .map(tokenValidationResponse -> {
                     if (tokenValidationResponse.getMessage().equals(Constants.WRONG_PASSWORD)) {
                         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(tokenValidationResponse);
@@ -77,7 +79,7 @@ public class AuthController {
 
     @PostMapping("/reset-password")
     public Mono<ResponseEntity<GetTokenValidationResponse>> resetPassword(@RequestParam("token") String token, @RequestParam("password") String password, @RequestParam("confirmationPassword") String confirmationPassword) {
-        return emailSenderService.validatePasswordReset(token, password, confirmationPassword)
+        return authService.validatePasswordReset(token, password, confirmationPassword)
                 .map(tokenValidationResponse ->{
                     if (tokenValidationResponse.getMessage().equals(Constants.WRONG_PASSWORD)){
                         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(tokenValidationResponse);

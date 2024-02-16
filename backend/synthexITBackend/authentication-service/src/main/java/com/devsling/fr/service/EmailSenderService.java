@@ -11,9 +11,6 @@ import reactor.core.publisher.Mono;
 
 public interface EmailSenderService {
 
-    Mono<GetTokenValidationResponse> validatePasswordReset(String token, String password, String confirmationPassword);
-
-    Mono<GetForgetPasswordResponse> passwordResetMail(String email);
 
 
     String generateToken();

@@ -24,6 +24,7 @@ public class Constants {
     public static final String WRONG_PASSWORD = "Weak Password: Password should contain at least one uppercase letter, one lowercase letter, one digit, and one special character.\"";
     public static final String SUCCESS_VERIFICATION ="Verification succeeded";
     public static final String FAILED_VERIFICATION ="Verification failed";
+    public static final String SUCCESS_VALIDATION ="Validation successful";
 
     public static final String REGISTRATION_CANDIDATE_MESSAGE = "Congratulations! You have successfully registered as a candidate.\n"
             + "To activate your account, please check your email inbox and verify your email address.\n"

@@ -15,4 +15,5 @@ public class Constants {
     public static final String UPDATE_CANDIDATE_ERROR_MESSAGE = "Error updating candidate";
     public static final String DELETE_CANDIDATE_ERROR_MESSAGE = "Error deleting candidate";
 
+
 }
