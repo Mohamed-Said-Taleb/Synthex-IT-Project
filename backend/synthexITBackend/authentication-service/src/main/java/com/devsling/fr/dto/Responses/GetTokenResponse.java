@@ -11,8 +11,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GetTokenResponse {
-    @JsonProperty("token")
+
+    @JsonProperty("access-token")
     private String token;
+    @JsonProperty("refresh-token")
+    private String refreshToken;
     @JsonProperty("message")
     private String message;
 }

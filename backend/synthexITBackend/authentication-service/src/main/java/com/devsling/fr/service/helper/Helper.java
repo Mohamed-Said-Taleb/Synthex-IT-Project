@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +35,7 @@ public class Helper {
     }
 
     public GetForgetPasswordResponse validatePasswordReset(String email) {
-        AppUser user = userService.findUserByEmail(email);
+        Optional<AppUser> user = userService.findUserByEmail(email);
 
         if (user == null) {
             return new GetForgetPasswordResponse("This email is not registered", null);
@@ -86,13 +87,16 @@ public class Helper {
         if (loginFormRequest.getPassword() == null || loginFormRequest.getPassword().isEmpty()) {
             return RegisterResponse.builder().message("Password should not be empty").build();
         }
-        AppUser user = userRepository.findByUsername(loginFormRequest.getUsername());
 
-        if (!user.isEnabled()) {
-            return RegisterResponse
-                    .builder()
-                    .message("Your account is not enabled. Please verify your email.")
-                    .build();
+        Optional<AppUser> user = userRepository.findByUsername(loginFormRequest.getUsername());
+
+        if(user.isPresent()){
+            if (!user.get().isEnabled()) {
+                return RegisterResponse
+                        .builder()
+                        .message("Your account is not enabled. Please verify your email.")
+                        .build();
+            }
         }
         return RegisterResponse.builder().message("Validation successful").build();
     }

@@ -54,7 +54,7 @@ public class CandidateController {
     @DeleteMapping("/delete/{id}")
     public Mono<ResponseEntity<Object>> deleteCandidate(@PathVariable Long id) {
         return candidateService.deleteCandidate(id)
-                .thenReturn(ResponseEntity.status(HttpStatus.NO_CONTENT).build());
+                .thenReturn(ResponseEntity.status(HttpStatus.OK).build());
     }
     @GetMapping("/profile")
     public Mono<ResponseEntity<CandidateDto>> getCandidateByEmail(@RequestBody String email) {

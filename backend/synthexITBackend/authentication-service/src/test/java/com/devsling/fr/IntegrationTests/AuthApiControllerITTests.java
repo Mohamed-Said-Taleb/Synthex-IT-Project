@@ -15,6 +15,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -37,9 +38,10 @@ class AuthApiControllerITTests {
     @MockBean
     private AuthService authService;
 
+    private final static String BASIC_AUTH_PATH="/auth";
+
     @Test
     public void registerOkTestWithStatus200() {
-
         SignUpFormRequest request = SignUpFormRequest.builder()
                 .username("test")
                 .email("test@gmail.com")
@@ -47,14 +49,15 @@ class AuthApiControllerITTests {
                 .role_Name(RoleName.CANDIDATE.name())
                 .build();
 
-        RegisterResponse response =RegisterResponse.builder()
-                .message(Constants.USER_REGISTERED_SUCCESSFULLY).build();
+        RegisterResponse response = RegisterResponse.builder()
+                .message(Constants.USER_REGISTERED_SUCCESSFULLY)
+                .build();
 
         Mockito.when(authService.signup(any(SignUpFormRequest.class)))
                 .thenReturn(Mono.just(response));
 
         webTestClient.post()
-                .uri("/auth/register")
+                .uri(BASIC_AUTH_PATH+"/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(request)
                 .exchange()
@@ -80,7 +83,7 @@ class AuthApiControllerITTests {
                 .thenReturn(Mono.just(response));
 
         webTestClient.post()
-                .uri("/auth/register")
+                .uri(BASIC_AUTH_PATH+"/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(request)
                 .exchange()

@@ -1,6 +1,7 @@
 package com.devsling.fr.entities;
 
 
+import com.devsling.fr.tools.AuthProvider;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -41,9 +42,11 @@ public class AppUser implements Serializable {
     private String email;
 
     private String gender;
-
+    private AuthProvider provider;
     @Column(name = "verification_code",updatable = false)
     private String verificationCode;
+    private String stripeCustomerId;
+    private String imageUrl;
 
 
     @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
