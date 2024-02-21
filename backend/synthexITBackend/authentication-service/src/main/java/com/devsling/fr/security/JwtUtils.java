@@ -2,6 +2,7 @@ package com.devsling.fr.security;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.devsling.fr.tools.Constants;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -52,12 +53,12 @@ public class JwtUtils {
     }
 
 
-    public String generateToken(String userName,Authentication authResult) {
+    public  Map<String,String> generateToken(String userName,Authentication authResult) {
         Map<String, Object> claims = new HashMap<>();
         return createToken(claims, userName,authResult);
     }
 
-    private String createToken(Map<String, Object> claims, String userName, Authentication authResult) {
+    private Map<String,String> createToken(Map<String, Object> claims, String userName, Authentication authResult) {
         org.springframework.security.core.userdetails.User SpringUser = (org.springframework.security.core.userdetails.User) authResult.getPrincipal();
 
         List<String> roles = new ArrayList<>();
@@ -65,21 +66,27 @@ public class JwtUtils {
             roles.add(au.getAuthority());
 
         });
-            return Jwts.builder()
-                    .setClaims(claims)
-                    .setSubject(userName)
-                    .claim("roles", roles)  // Add roles as a custom claim
-                    .setIssuedAt(new Date(System.currentTimeMillis()))
-                    .setExpiration(new Date(System.currentTimeMillis() + 2 * 60 * 60 * 1000))
-                    .signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
+
+        String jwtAccessToken = JWT
+                .create()
+                .withSubject(SpringUser.getUsername())
+                .withArrayClaim("roles", roles.toArray(new String[roles.size()]))
+                .withExpiresAt(new Date(System.currentTimeMillis() + 2 * 60 * 60 * 1000))
+                .sign(Algorithm.HMAC256(Constants.Secret));
+        String jwtRefreshToken = JWT
+                .create()
+                .withSubject(SpringUser.getUsername())
+                .withExpiresAt(new Date(System.currentTimeMillis() +  2 * 60 * 60 * 1000))// use long duration
+                .sign(Algorithm.HMAC256(Constants.Secret));
+
+        Map<String,String> idToken=new HashMap<>();
+        idToken.put("access-token",jwtAccessToken);
+        idToken.put("refresh-token",jwtRefreshToken);
+        return idToken;
     }
 
     private Key getSignKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET);
         return Keys.hmacShaKeyFor(keyBytes);
-    }
-    @Bean
-    BCryptPasswordEncoder getBCE() {
-        return new BCryptPasswordEncoder();
     }
 }

@@ -35,6 +35,7 @@ import reactor.core.publisher.Mono;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.devsling.fr.tools.Constants.WRONG_PASSWORD;
@@ -163,9 +164,10 @@ public class AuthServiceImpl implements AuthService {
             );
 
             if (authenticate.isAuthenticated()) {
-                String token = jwtUtils.generateToken(loginFormRequest.getUsername(), authenticate);
+                Map<String,String> idToken = jwtUtils.generateToken(loginFormRequest.getUsername(), authenticate);
                 return Mono.just(GetTokenResponse.builder()
-                        .token(token)
+                        .token(idToken.get(Constants.ACCEESS_TOKEN))
+                        .refreshToken(idToken.get(Constants.REFRESH_TOKEN))
                         .message("Authentication successful")
                         .build());
             } else {
@@ -221,11 +223,11 @@ public class AuthServiceImpl implements AuthService {
             return Mono.just(validationResponse);
         }
 
-        AppUser user = userService.findUserByEmail(email);
-        ForgetPasswordToken forgetPasswordToken = createForgetPasswordToken(user);
+        Optional<AppUser> user = userService.findUserByEmail(email);
+        ForgetPasswordToken forgetPasswordToken = createForgetPasswordToken(user.get());
 
-        emailSenderService.sendMail(user.getUsername(),
-                user.getEmail(),
+        emailSenderService.sendMail(user.get().getUsername(),
+                user.get().getEmail(),
                 "Password reset link",
                 forgetPasswordToken.getToken(),
                 FORGET_PASSWORD_EMAIL_TEMPLATE,

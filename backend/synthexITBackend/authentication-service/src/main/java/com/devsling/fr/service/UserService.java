@@ -5,17 +5,17 @@ import com.devsling.fr.entities.AppRole;
 import com.devsling.fr.entities.AppUser;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
-    AppUser findUserByUsername(String userName);
-    AppUser findUserByEmail(String email);
+    Optional<AppUser> findUserByUsername(String userName);
+    Optional<AppUser> findUserByEmail(String email);
 
     List<AppUser> getAllUser();
 
     void addRole(AppRole appRole);
 
     void addRoleToUser(String username, String roleName);
-    AppUser getUserById(Long id);
 
     AppUser UpdateUser(AppUser appUser);
 

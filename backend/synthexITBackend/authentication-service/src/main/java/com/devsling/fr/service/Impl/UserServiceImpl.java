@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,12 +21,12 @@ public class  UserServiceImpl implements UserService {
 
 
     @Override
-    public AppUser findUserByUsername(String username) {
+    public Optional<AppUser> findUserByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 
     @Override
-    public AppUser findUserByEmail(String email) {
+    public Optional<AppUser> findUserByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
@@ -40,14 +41,9 @@ public class  UserServiceImpl implements UserService {
 
     @Override
     public void addRoleToUser(String userName, String roleName) {
-        AppUser usr = userRepository.findByUsername(userName);
+        Optional<AppUser> usr = userRepository.findByUsername(userName);
         AppRole rol = roleRepository.findByRole(roleName);
-        usr.getAppRoles().add(rol);
-    }
-
-    @Override
-    public AppUser getUserById(Long id) {
-        return userRepository.findUserByIdUser(id);
+        usr.ifPresent(appUser -> appUser.getAppRoles().add(rol));
     }
 
     @Override

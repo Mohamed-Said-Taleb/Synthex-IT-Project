@@ -28,6 +28,18 @@ spring:
           auth: true
           starttls:
             enable: true
+# GOOGLE Provider Configuration
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: 872530512486-1kahv2vj48bvpbde1cci6egi2vji9rvk.apps.googleusercontent.com
+            clientSecret: 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
+            scope:
+               - profile
+               - email
+
 
 # Eureka server Configuration
 eureka:
@@ -35,6 +47,7 @@ eureka:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
 
+# Backend Configuration
 backend:
   maxConnections: 600
   acquireTimeout: 1000

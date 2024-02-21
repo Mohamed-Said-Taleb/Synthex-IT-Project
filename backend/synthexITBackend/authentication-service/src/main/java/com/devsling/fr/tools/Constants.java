@@ -13,6 +13,9 @@ public class Constants {
 
     public static String Secret = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
     public static String Prefixe = "Bearer ";
+    public static String ACCEESS_TOKEN = "access-token";
+    public static String REFRESH_TOKEN = "refresh-token";
+
 
     //Authentication Response
     public static final String  VALID_TOKEN ="Valid token";

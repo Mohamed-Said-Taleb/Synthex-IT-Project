@@ -10,6 +10,5 @@ public interface CandidateService {
     Mono<CandidateDto> saveCandidate(Mono<CandidateDto> candidateDtoMono);
     Mono<CandidateDto> updateCandidate(Mono<CandidateDto> candidateDtoMono, Long id);
     Mono<Void> deleteCandidate(Long id);
-
     Mono<CandidateDto> getCandidateByEmail(String email);
 }
