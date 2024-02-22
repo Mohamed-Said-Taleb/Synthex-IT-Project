@@ -2,9 +2,11 @@ package com.devsling.fr.service;
 
 import com.devsling.fr.dto.Requests.LoginFormRequest;
 import com.devsling.fr.dto.Requests.SignUpFormRequest;
+import com.devsling.fr.dto.Responses.CandidateProfileResponse;
 import com.devsling.fr.dto.Responses.GetForgetPasswordResponse;
 import com.devsling.fr.dto.Responses.GetTokenResponse;
 import com.devsling.fr.dto.Responses.GetTokenValidationResponse;
+import com.devsling.fr.dto.Responses.ProfileResponse;
 import com.devsling.fr.dto.Responses.RegisterResponse;
 import com.devsling.fr.dto.Responses.VerificationResponse;
 import jakarta.mail.MessagingException;
@@ -22,5 +24,5 @@ public interface AuthService {
     Mono<GetTokenValidationResponse> validatePasswordReset(String token, String password, String confirmationPassword);
 
     Mono<GetForgetPasswordResponse> passwordResetMail(String email) throws MessagingException, UnsupportedEncodingException;
-
+    Mono<ProfileResponse> getProfile(String email);
 }

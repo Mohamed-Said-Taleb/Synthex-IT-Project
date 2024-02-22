@@ -6,7 +6,7 @@ import com.devsling.fr.exceptions.OAuth2AuthenticationProcessingException;
 import com.devsling.fr.repository.UserRepository;
 import com.devsling.fr.security.oauth2.user.OAuth2UserInfo;
 import com.devsling.fr.security.oauth2.user.OAuth2UserInfoFactory;
-import com.devsling.fr.tools.AuthProvider;
+import com.devsling.fr.security.AuthProvider;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
 import lombok.RequiredArgsConstructor;

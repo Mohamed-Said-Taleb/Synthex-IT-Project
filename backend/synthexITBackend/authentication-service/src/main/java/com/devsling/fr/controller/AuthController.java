@@ -2,9 +2,11 @@ package com.devsling.fr.controller;
 
 import com.devsling.fr.dto.Requests.LoginFormRequest;
 import com.devsling.fr.dto.Requests.SignUpFormRequest;
+import com.devsling.fr.dto.Responses.CandidateProfileResponse;
 import com.devsling.fr.dto.Responses.GetForgetPasswordResponse;
 import com.devsling.fr.dto.Responses.GetTokenResponse;
 import com.devsling.fr.dto.Responses.GetTokenValidationResponse;
+import com.devsling.fr.dto.Responses.ProfileResponse;
 import com.devsling.fr.dto.Responses.RegisterResponse;
 import com.devsling.fr.dto.Responses.VerificationResponse;
 import com.devsling.fr.service.AuthService;
@@ -50,6 +52,9 @@ public class AuthController {
                     if (tokenResponse.getMessage().equals(Constants.INVALID_USERNAME_OR_PASSWORD)){
                         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(tokenResponse);
                     }
+                    if (tokenResponse.getMessage().equals(Constants.ENABLED_ACCOUNT)){
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(tokenResponse);
+                    }
                     return ResponseEntity.status(HttpStatus.OK).body(tokenResponse);
                 });
 
@@ -84,6 +89,11 @@ public class AuthController {
                     if (tokenValidationResponse.getMessage().equals(Constants.WRONG_PASSWORD)){
                         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(tokenValidationResponse);
                     }
+                    if (tokenValidationResponse.getMessage().equals(Constants.INVALID_PASSWORD_RESET_TOKEN)){
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(tokenValidationResponse);
+                    } if (tokenValidationResponse.getMessage().equals(Constants.PASSWORD_RESET_NOT_MATCH)){
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(tokenValidationResponse);
+                    }
                     return ResponseEntity.status(HttpStatus.OK).body(tokenValidationResponse);
                 } );
     }
@@ -96,5 +106,11 @@ public class AuthController {
                     }
                     return ResponseEntity.status(HttpStatus.OK).body(verificationResponse);
                 } );
+    }
+
+    @GetMapping("/profile")
+    public Mono<ResponseEntity<ProfileResponse>> getProfile(@RequestParam("email") String email) {
+        return authService.getProfile(email)
+                .map(verificationResponse -> ResponseEntity.status(HttpStatus.OK).body(verificationResponse));
     }
 }

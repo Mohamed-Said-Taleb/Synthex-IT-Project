@@ -7,6 +7,6 @@ import reactor.core.publisher.Mono;
 public interface CandidateApiClient {
 
     Mono<CandidateProfileResponse> saveCandidate(CandidateRequest candidateRequest);
-    Mono<CandidateProfileResponse> profileCandidate(CandidateRequest candidateRequest);
+    Mono<CandidateProfileResponse> profileCandidate(String email);
 
 }

@@ -2,11 +2,15 @@ package com.devsling.fr.service.out;
 
 import com.devsling.fr.dto.Requests.CandidateRequest;
 import com.devsling.fr.dto.Responses.CandidateProfileResponse;
+import com.devsling.fr.tools.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+
+import static com.devsling.fr.tools.Constants.AUTHORISATION;
+
 @Component
 @RequiredArgsConstructor
 public class CandidateApiClientImpl implements CandidateApiClient{
@@ -26,10 +30,10 @@ public class CandidateApiClientImpl implements CandidateApiClient{
                 .onErrorResume(error -> Mono.error(new RuntimeException("Error calling candidate microservice")));
     }
     @Override
-    public Mono<CandidateProfileResponse> profileCandidate(CandidateRequest candidateRequest) {
+    public Mono<CandidateProfileResponse> profileCandidate(String email) {
         return candidateWebClient.post()
                 .uri(PROFILE_CANDIDATE_PATH)
-                .body(BodyInserters.fromValue(candidateRequest.getEmail()))
+                .body(BodyInserters.fromValue(email))
                 .retrieve()
                 .bodyToMono(CandidateProfileResponse.class)
                 .onErrorResume(error -> Mono.error(new RuntimeException("Error calling candidate microservice")));

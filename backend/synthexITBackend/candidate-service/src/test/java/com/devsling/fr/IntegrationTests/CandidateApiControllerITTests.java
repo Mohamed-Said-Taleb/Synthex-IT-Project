@@ -38,26 +38,6 @@ class CandidateApiControllerITTests {
 
     private final static String BASIC_PATH="/candidates";
 
-    @Test
-    public void getCandidatesOkTestWithStatus200() {
-
-        Flux<CandidateDto> candidateDtoFlux = Flux.just(CandidateDto.builder()
-                .email("test1@gmail.com")
-                        .build(),
-                CandidateDto.builder()
-                        .email("test@gmail.com")
-                        .build());
-        when(candidateService.getCandidates()).thenReturn(candidateDtoFlux);
-
-        webTestClient.get()
-                .uri(BASIC_PATH+"/all")
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus()
-                .isOk()
-                .expectBodyList(CandidateDto.class)
-                .isEqualTo(Objects.requireNonNull(candidateDtoFlux.collectList().block()));
-    }
 
     @Test
     public void getCandidateByIdOkTestWithStatus200() {

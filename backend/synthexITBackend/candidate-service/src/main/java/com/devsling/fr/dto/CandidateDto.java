@@ -15,6 +15,8 @@ import java.util.List;
 @NoArgsConstructor
 public class CandidateDto {
 
+    @JsonProperty("id")
+    Long id;
     @JsonProperty("firstName")
     private String firstName;
     @JsonProperty("lastName")
@@ -27,5 +29,4 @@ public class CandidateDto {
     private String resumeUrl;
     @JsonProperty("professionalExperiences")
     private List<String> professionalExperiences;
-
 }

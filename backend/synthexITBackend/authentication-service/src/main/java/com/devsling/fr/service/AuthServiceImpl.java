@@ -1,4 +1,4 @@
-package com.devsling.fr.service.Impl;
+package com.devsling.fr.service;
 
 import com.devsling.fr.dto.Requests.CandidateRequest;
 import com.devsling.fr.dto.Requests.EmployerCreateRequest;
@@ -7,6 +7,7 @@ import com.devsling.fr.dto.Requests.SignUpFormRequest;
 import com.devsling.fr.dto.Responses.GetForgetPasswordResponse;
 import com.devsling.fr.dto.Responses.GetTokenResponse;
 import com.devsling.fr.dto.Responses.GetTokenValidationResponse;
+import com.devsling.fr.dto.Responses.ProfileResponse;
 import com.devsling.fr.dto.Responses.RegisterResponse;
 import com.devsling.fr.dto.Responses.VerificationResponse;
 import com.devsling.fr.entities.AppRole;
@@ -14,9 +15,6 @@ import com.devsling.fr.entities.AppUser;
 import com.devsling.fr.entities.ForgetPasswordToken;
 import com.devsling.fr.repository.UserRepository;
 import com.devsling.fr.security.JwtUtils;
-import com.devsling.fr.service.AuthService;
-import com.devsling.fr.service.EmailSenderService;
-import com.devsling.fr.service.UserService;
 import com.devsling.fr.service.helper.Helper;
 import com.devsling.fr.service.out.CandidateApiClient;
 import com.devsling.fr.service.out.EmployerApiClient;
@@ -37,8 +35,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
-import static com.devsling.fr.tools.Constants.WRONG_PASSWORD;
+import static com.devsling.fr.tools.Constants.ENABLED_ACCOUNT;
 
 @Service
 @RequiredArgsConstructor
@@ -84,7 +83,8 @@ public class AuthServiceImpl implements AuthService {
 
                 if (appUserBd.getAppRoles().get(0).getRole().equals(RoleName.CANDIDATE.name())) {
                     CandidateRequest candidateRequest = CandidateRequest.builder()
-                            .lastName(appUserBd.getUsername())
+                            .lastName(appUserBd.getLastName())
+                            .lastName(appUserBd.getFirstName())
                             .email(appUserBd.getEmail())
                             .firstName(signUpFormRequest.getFirstName())
                             .resumeUrl(signUpFormRequest.getResumeUrl())
@@ -157,6 +157,12 @@ public class AuthServiceImpl implements AuthService {
                     .message(validationResponse.getMessage())
                     .build());
         }
+        if (ENABLED_ACCOUNT.equals(validationResponse.getMessage())) {
+            return Mono.just(GetTokenResponse.builder()
+                    .message(validationResponse.getMessage())
+                    .build());
+        }
+
 
         try {
             Authentication authenticate = authenticationManager.authenticate(
@@ -236,6 +242,22 @@ public class AuthServiceImpl implements AuthService {
         helper.saveForgetPasswordToken(forgetPasswordToken);
         return Mono.just(new GetForgetPasswordResponse("Password reset email sent successfully", forgetPasswordToken.getToken())) ;
     }
+
+    @Override
+    public Mono<ProfileResponse> getProfile(String email) {
+        Optional<AppUser> user = userRepository.findByEmail(email);
+        if (user.isPresent()) {
+            String role = user.get().getAppRoles().get(0).getRole();
+            if (role.equals(RoleName.CANDIDATE.name())) {
+                return candidateApiClient.profileCandidate(email)
+                        .map(candidateProfileResponse -> ProfileResponse.builder()
+                                .email(candidateProfileResponse.getEmail())
+                                .build());
+            }
+        }
+        return Mono.empty();
+    }
+
     private ForgetPasswordToken createForgetPasswordToken(AppUser user) {
         return ForgetPasswordToken.builder().expireTime(helper.expireTimeRange()).isUsed(false).appUser(user).token(emailSenderService.generateToken()).build();
     }
@@ -246,23 +268,30 @@ public class AuthServiceImpl implements AuthService {
             if (password.equals(confirmationPassword)) {
                 ForgetPasswordToken forgetPasswordToken = emailSenderService.getByToken(token);
                 if (helper.isValidToken(forgetPasswordToken)) {
-                    if(helper.isStrongerPassword(password)){
-                        helper.resetPasswordAndSave(forgetPasswordToken,forgetPasswordToken.getAppUser(), password);
-                        return  Mono.just(new GetTokenValidationResponse(WRONG_PASSWORD));
-                    }else {
+                    if(!helper.isExpired(forgetPasswordToken)){
+                        if(helper.isStrongerPassword(password)){
+                            helper.resetPasswordAndSave(forgetPasswordToken,forgetPasswordToken.getAppUser(), password);
+                            forgetPasswordToken.setUsed(true);
+                            return Mono.just(GetTokenValidationResponse.builder()
+                                    .message(Constants.PASSWORD_RESET_SUCCESSFUL)
+                                    .build());
+                        }else {
+                            return  Mono.just(new GetTokenValidationResponse(Constants.WRONG_PASSWORD));
+                        }
+                    }
+                    else {
                         return Mono.just(GetTokenValidationResponse.builder()
-                                .message("Password reset successful")
+                                .message(Constants.EXPIRED_PASSWORD_RESET_TOKEN)
                                 .build());
                     }
-
                 } else {
                     return Mono.just(GetTokenValidationResponse.builder()
-                            .message("Invalid or used/expired token")
+                            .message(Constants.INVALID_PASSWORD_RESET_TOKEN)
                             .build());
                 }
             } else {
                 return Mono.just(GetTokenValidationResponse.builder()
-                        .message("Password and confirmation password do not match")
+                        .message(Constants.PASSWORD_RESET_NOT_MATCH)
                         .build());
             }
         } catch (Exception e) {

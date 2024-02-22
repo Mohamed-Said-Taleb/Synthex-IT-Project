@@ -4,7 +4,7 @@ import com.devsling.fr.dto.EmployerDto;
 import com.devsling.fr.model.Employer;
 import com.devsling.fr.repository.EmployerRepository;
 import com.devsling.fr.service.EmployerService;
-import com.devsling.fr.service.Impl.EmployerServiceImpl;
+import com.devsling.fr.service.EmployerServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

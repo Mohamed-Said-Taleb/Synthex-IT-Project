@@ -1,7 +1,8 @@
 package com.devsling.fr.entities;
 
 
-import com.devsling.fr.tools.AuthProvider;
+import com.devsling.fr.security.AuthProvider;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -40,7 +41,10 @@ public class AppUser implements Serializable {
     private String password;
 
     private String email;
-
+    @JsonProperty("firstName")
+    private String firstName;
+    @JsonProperty("lastName")
+    private String lastName;
     private String gender;
     private AuthProvider provider;
     @Column(name = "verification_code",updatable = false)
