@@ -21,6 +21,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -53,13 +54,11 @@ public class SecurityConfig {
                             ).permitAll()
                             .anyRequest().authenticated()
                     )
-                    .exceptionHandling(exceptionHandling -> exceptionHandling
-                            .authenticationEntryPoint(authEntryPoint))
                     .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                     .formLogin(AbstractHttpConfigurer::disable)
                     .logout(AbstractHttpConfigurer::disable)
                     .httpBasic(AbstractHttpConfigurer::disable)
-                    .oauth2Login(oauth2 -> oauth2
+                  /**  .oauth2Login(oauth2 -> oauth2
                             .authorizationEndpoint(authorizationEndpoint -> authorizationEndpoint
                                     .baseUri("/oauth2/authorize")
                                     .authorizationRequestRepository(cookieAuthorizationRequestRepository()))
@@ -68,8 +67,8 @@ public class SecurityConfig {
                             .userInfoEndpoint(userInfoEndpoint -> userInfoEndpoint
                                     .userService(customOAuth2UserService))
                             .successHandler(oAuth2AuthenticationSuccessHandler)
-                            .failureHandler(oAuth2AuthenticationFailureHandler))
-                    .addFilterBefore(authorizationFilter, OAuth2LoginAuthenticationFilter.class)
+                            .failureHandler(oAuth2AuthenticationFailureHandler))**/
+                    .addFilterBefore(authorizationFilter, UsernamePasswordAuthenticationFilter.class)
                     .build();
         }
     @Bean

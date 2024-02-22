@@ -4,7 +4,7 @@ import com.devsling.fr.dto.CandidateDto;
 import com.devsling.fr.model.Candidate;
 import com.devsling.fr.repository.CandidateRepository;
 import com.devsling.fr.service.CandidateService;
-import com.devsling.fr.service.Impl.CandidateServiceImpl;
+import com.devsling.fr.service.CandidateServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

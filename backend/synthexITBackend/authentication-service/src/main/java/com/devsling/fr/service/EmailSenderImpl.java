@@ -1,13 +1,7 @@
-package com.devsling.fr.service.Impl;
+package com.devsling.fr.service;
 
-import com.devsling.fr.dto.Responses.GetForgetPasswordResponse;
-import com.devsling.fr.dto.Responses.GetTokenValidationResponse;
-import com.devsling.fr.entities.AppUser;
 import com.devsling.fr.entities.ForgetPasswordToken;
 import com.devsling.fr.repository.MailSenderRepository;
-import com.devsling.fr.service.EmailSenderService;
-import com.devsling.fr.service.UserService;
-import com.devsling.fr.service.helper.Helper;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
@@ -19,14 +13,12 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-import reactor.core.publisher.Mono;
 
 import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 
 import static com.devsling.fr.tools.Constants.EMAIL_PERSONAL;
 import static com.devsling.fr.tools.Constants.EMAIL_SENDER;
-import static com.devsling.fr.tools.Constants.WRONG_PASSWORD;
 
 @Service
 @RequiredArgsConstructor

@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import static com.devsling.fr.tools.Constants.ENABLED_ACCOUNT;
+
 @Service
 @RequiredArgsConstructor
 public class Helper {
@@ -94,7 +96,7 @@ public class Helper {
             if (!user.get().isEnabled()) {
                 return RegisterResponse
                         .builder()
-                        .message("Your account is not enabled. Please verify your email.")
+                        .message(ENABLED_ACCOUNT)
                         .build();
             }
         }
@@ -126,7 +128,7 @@ public class Helper {
     }
 
     public boolean isValidToken(ForgetPasswordToken forgetPasswordToken) {
-        return forgetPasswordToken != null && !forgetPasswordToken.isUsed() && !isExpired(forgetPasswordToken);
+        return forgetPasswordToken != null && !forgetPasswordToken.isUsed() ;
     }
 
     public boolean isExpired(ForgetPasswordToken forgetPasswordToken) {

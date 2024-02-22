@@ -39,15 +39,12 @@ public class JwtUtils {
     }
     public boolean validateToken(final String token) {
         try {
-             Jwts.parserBuilder()
-                    .setSigningKey(getSignKey())
+            Jwts.parserBuilder()
+                    .setSigningKey(Keys.hmacShaKeyFor(Constants.Secret.getBytes()))
                     .build()
                     .parseClaimsJws(token);
-
-            // Token is valid
             return true;
         } catch (Exception e) {
-            // Token validation failed
             return false;
         }
     }
@@ -70,12 +67,13 @@ public class JwtUtils {
         String jwtAccessToken = JWT
                 .create()
                 .withSubject(SpringUser.getUsername())
-                .withArrayClaim("roles", roles.toArray(new String[roles.size()]))
+                .withArrayClaim("roles", roles.toArray(new String[0]))
                 .withExpiresAt(new Date(System.currentTimeMillis() + 2 * 60 * 60 * 1000))
                 .sign(Algorithm.HMAC256(Constants.Secret));
         String jwtRefreshToken = JWT
                 .create()
                 .withSubject(SpringUser.getUsername())
+                .withArrayClaim("roles", roles.toArray(new String[0]))
                 .withExpiresAt(new Date(System.currentTimeMillis() +  2 * 60 * 60 * 1000))// use long duration
                 .sign(Algorithm.HMAC256(Constants.Secret));
 

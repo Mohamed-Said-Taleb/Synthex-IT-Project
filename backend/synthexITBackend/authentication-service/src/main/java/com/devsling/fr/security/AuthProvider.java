@@ -1,4 +1,4 @@
-package com.devsling.fr.tools;
+package com.devsling.fr.security;
 
 public enum AuthProvider {
     local,

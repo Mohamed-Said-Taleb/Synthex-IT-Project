@@ -1,4 +1,4 @@
-package com.devsling.fr.service.Impl;
+package com.devsling.fr.service;
 
 import com.devsling.fr.dto.EmployerDto;
 import com.devsling.fr.repository.EmployerRepository;
