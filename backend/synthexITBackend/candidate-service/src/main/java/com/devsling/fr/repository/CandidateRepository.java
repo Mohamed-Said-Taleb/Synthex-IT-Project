@@ -11,4 +11,5 @@ public interface CandidateRepository extends ReactiveCrudRepository<Candidate,Lo
     Mono<Candidate> findByEmail(String email);
 
 
+
 }

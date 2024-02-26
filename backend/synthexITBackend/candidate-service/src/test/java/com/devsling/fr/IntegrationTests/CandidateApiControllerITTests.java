@@ -46,7 +46,7 @@ class CandidateApiControllerITTests {
         CandidateDto candidateDto = CandidateDto.builder()
                 .email("test@gmail.com")
                 .build();
-        when(candidateService.getCandidate(candidateId)).thenReturn(Mono.just(candidateDto));
+        when(candidateService.getCandidateById(candidateId)).thenReturn(Mono.just(candidateDto));
 
         webTestClient.get()
                 .uri(BASIC_PATH+"/{id}", candidateId)
@@ -100,13 +100,13 @@ class CandidateApiControllerITTests {
     public void deleteCandidateOkTestWithStatus200() {
 
         long candidateId = 1L;
-        when(candidateService.deleteCandidate(candidateId)).thenReturn(Mono.empty());
+        when(candidateService.deleteCandidateById(candidateId)).thenReturn(Mono.empty());
 
         webTestClient.delete()
                 .uri(BASIC_PATH+"/delete/{id}", candidateId)
                 .exchange()
                 .expectStatus()
-                .isOk()
+                .isNoContent()
                 .expectBody(Void.class);
     }
 }

@@ -14,7 +14,7 @@ public class GlobalExceptionHandler {
         ErrorException errorException=ErrorException.builder()
                 .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .message(e.getMessage())
-                .service(Constants.CANDIDATE_SERVICE_NAME)
+                .service(Constants.EMPLOYER_SERVICE_NAME)
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .build();
        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorException);

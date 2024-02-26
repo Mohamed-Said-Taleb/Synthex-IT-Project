@@ -6,9 +6,9 @@ import reactor.core.publisher.Mono;
 
 public interface CandidateService {
     Flux<CandidateDto> getCandidates();
-    Mono<CandidateDto> getCandidate(Long id);
+    Mono<CandidateDto> getCandidateById(Long id);
     Mono<CandidateDto> saveCandidate(Mono<CandidateDto> candidateDtoMono);
     Mono<CandidateDto> updateCandidate(Mono<CandidateDto> candidateDtoMono, Long id);
-    Mono<Void> deleteCandidate(Long id);
+    Mono<Void> deleteCandidateById(Long id);
     Mono<CandidateDto> getCandidateByEmail(String email);
 }

@@ -25,7 +25,7 @@ public class CandidateController {
     private final CandidateService candidateService;
 
 
-    @GetMapping("all")
+    @GetMapping("/all")
     public Flux<ResponseEntity<CandidateDto>> getCandidates() {
         return candidateService.getCandidates()
                 .map(candidateDto -> ResponseEntity.status(HttpStatus.OK).body(candidateDto));
@@ -34,7 +34,7 @@ public class CandidateController {
 
     @GetMapping("/{id}")
     public Mono<ResponseEntity<CandidateDto>> getCandidate(@PathVariable Long id) {
-        return candidateService.getCandidate(id)
+        return candidateService.getCandidateById(id)
                 .map(candidateDto -> ResponseEntity.status(HttpStatus.OK).body(candidateDto));
     }
 
@@ -52,8 +52,8 @@ public class CandidateController {
 
     @DeleteMapping("/delete/{id}")
     public Mono<ResponseEntity<Object>> deleteCandidate(@PathVariable Long id) {
-        return candidateService.deleteCandidate(id)
-                .thenReturn(ResponseEntity.status(HttpStatus.OK).build());
+        return candidateService.deleteCandidateById(id)
+                .thenReturn(ResponseEntity.status(HttpStatus.NO_CONTENT).build());
     }
     @PostMapping("/me")
     public Mono<ResponseEntity<CandidateDto>> getCandidateByEmail(@RequestParam String email) {
