@@ -6,10 +6,10 @@ import reactor.core.publisher.Mono;
 
 public interface EmployerService {
     Flux<EmployerDto> getEmployer();
-    Mono<EmployerDto> getEmployer(Long id);
+    Mono<EmployerDto> getEmployerById(Long id);
     Mono<EmployerDto> saveEmployer(Mono<EmployerDto> candidateDtoMono);
     Mono<EmployerDto> updateEmployer(Mono<EmployerDto> candidateDtoMono, Long id);
-    Mono<Void> deleteEmployer(Long id);
+    Mono<Void> deleteEmployerById(Long id);
 
     Mono<EmployerDto> getEmployerByEmail(String email);
 }

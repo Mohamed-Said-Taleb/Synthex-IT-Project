@@ -1,15 +1,18 @@
 package com.devsling.fr.UnitaireTests;
 
 import com.devsling.fr.dto.CandidateDto;
+import com.devsling.fr.exceptions.CandidateException;
 import com.devsling.fr.model.Candidate;
 import com.devsling.fr.repository.CandidateRepository;
 import com.devsling.fr.service.CandidateService;
 import com.devsling.fr.service.CandidateServiceImpl;
+import com.devsling.fr.tools.Constants;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import reactor.core.publisher.Flux;
@@ -50,11 +53,11 @@ public class CandidateServiceTests {
     }
 
     @Test
-    public void testGetCandidate() {
+    public void testGetCandidateById() {
         Long id = 1L;
         Candidate candidate = Candidate.builder().email("test@gmail.com").firstName("test").lastName("test").build();
         when(candidateRepository.findById(id)).thenReturn(Mono.just(candidate));
-        Mono<CandidateDto> result = candidateService.getCandidate(id);
+        Mono<CandidateDto> result = candidateService.getCandidateById(id);
         Assertions.assertEquals("test", Objects.requireNonNull(result.block()).getFirstName());
     }
 
@@ -92,7 +95,7 @@ public class CandidateServiceTests {
     public void deleteCandidateReturnsEmptyMono() {
         Long candidateId = 1L;
         when(candidateRepository.deleteById(candidateId)).thenReturn(Mono.empty());
-        Mono<Void> deleteMono = candidateService.deleteCandidate(candidateId);
+        Mono<Void> deleteMono = candidateService.deleteCandidateById(candidateId);
         StepVerifier.create(deleteMono).verifyComplete();
     }
 
@@ -103,5 +106,16 @@ public class CandidateServiceTests {
         when(candidateRepository.findByEmail(email)).thenReturn(Mono.just(candidate));
         Mono<CandidateDto> result = candidateService.getCandidateByEmail(email);
         Assertions.assertEquals("test", Objects.requireNonNull(result.block()).getFirstName());
+    }
+    @Test
+    void deleteCandidateById_CandidateNotFound_ThrowsException() {
+        CandidateRepository candidateRepository = Mockito.mock(CandidateRepository.class);
+        Mockito.when(candidateRepository.findById(Mockito.anyLong())).thenReturn(Mono.empty());
+        CandidateServiceImpl candidateService = new CandidateServiceImpl(candidateRepository);
+
+        StepVerifier.create(candidateService.deleteCandidateById(1L))
+                .expectErrorMatches(throwable -> throwable instanceof CandidateException &&
+                        throwable.getMessage().equals(Constants.DELETE_CANDIDATE_ERROR_MESSAGE))
+                .verify();
     }
 }

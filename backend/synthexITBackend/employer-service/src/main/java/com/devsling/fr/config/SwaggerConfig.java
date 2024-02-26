@@ -29,7 +29,7 @@ public class SwaggerConfig {
     }
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("Auth Micro-service API")
+                .title("Employer Micro-service API")
                 .description("\"Swagger Configuration For Application\"")
                 .contact(new Contact("DevSLing Developers",
                         "https://www.devsling.com/",

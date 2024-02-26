@@ -8,25 +8,17 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 
-import java.io.Serializable;
-
 
 @Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(schema = "employer")
-public class Employer implements Serializable {
+public class Employer  {
 
     @Id
     @Column("id")
     private Long id;
-
-    @Column("first_name")
-    private String firstName;
-
-    @Column("last_name")
-    private String lastName;
 
     @Column("email")
     private String email;

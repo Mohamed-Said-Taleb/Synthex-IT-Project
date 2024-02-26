@@ -22,6 +22,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.server.util.matcher.NegatedServerWebExchangeMatcher;
+import org.springframework.security.web.server.util.matcher.OrServerWebExchangeMatcher;
+
+import static org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers.pathMatchers;
 
 @Configuration
 @EnableWebSecurity
@@ -50,7 +54,15 @@ public class SecurityConfig {
                             .requestMatchers(
                                     "/",
                                     "/error",
-                                    "/favicon.ico"
+                                    "/favicon.ico",
+                                    "/info/**",
+                                    "/health/**",
+                                    "/prometheus/**",
+                                    "/metrics/**",
+                                    "/swagger-ui.html",
+                                    "/favicon.ico",
+                                    "/webjars/swagger-ui/**",
+                                    "/actuator/**"
                             ).permitAll()
                             .anyRequest().authenticated()
                     )

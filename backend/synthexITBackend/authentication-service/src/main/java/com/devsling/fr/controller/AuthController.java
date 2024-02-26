@@ -2,7 +2,6 @@ package com.devsling.fr.controller;
 
 import com.devsling.fr.dto.Requests.LoginFormRequest;
 import com.devsling.fr.dto.Requests.SignUpFormRequest;
-import com.devsling.fr.dto.Responses.CandidateProfileResponse;
 import com.devsling.fr.dto.Responses.GetForgetPasswordResponse;
 import com.devsling.fr.dto.Responses.GetTokenResponse;
 import com.devsling.fr.dto.Responses.GetTokenValidationResponse;
@@ -10,7 +9,6 @@ import com.devsling.fr.dto.Responses.ProfileResponse;
 import com.devsling.fr.dto.Responses.RegisterResponse;
 import com.devsling.fr.dto.Responses.VerificationResponse;
 import com.devsling.fr.service.AuthService;
-import com.devsling.fr.service.EmailSenderService;
 import com.devsling.fr.tools.Constants;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
