@@ -1,6 +1,5 @@
 package com.devsling.fr.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +15,7 @@ import java.util.List;
 public class CandidateDto {
 
     @JsonProperty("id")
-    Long id;
+    private Long id;
     @JsonProperty("firstName")
     private String firstName;
     @JsonProperty("lastName")

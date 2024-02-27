@@ -4,7 +4,7 @@ import com.devsling.fr.dto.CandidateDto;
 import com.devsling.fr.model.Candidate;
 import org.springframework.beans.BeanUtils;
 
-public class AppUtils {
+public class CandidateMapper {
     public static CandidateDto entityToDto(Candidate candidate) {
         CandidateDto candidateDto = new CandidateDto();
         BeanUtils.copyProperties(candidate, candidateDto);

@@ -43,6 +43,8 @@ public class CandidateServiceTests {
         MockHelper.fixClock(clock, LocalDate.of(2100, 12, 31));
     }
 
+
+
     @Test
     public void testGetCandidates() {
         Candidate candidate1 = Candidate.builder().email("test1@gmail.com").firstName("test1").lastName("test1").build();

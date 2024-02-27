@@ -36,35 +36,24 @@ class EmployerApiControllerITTests {
     @MockBean
     private EmployerService employerService;
 
-    @Test
-    public void getEmployersOkTestWithStatus200() {
-
-        Flux<EmployerDto> employerDtoFlux = Flux.just(new EmployerDto("test1", "test1", "test1@gmail.com"),
-                new EmployerDto("test2", "test2", "test2"));
-        when(employerService.getEmployer()).thenReturn(employerDtoFlux);
-
-        webTestClient.get()
-                .uri("/employers/all")
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus()
-                .isOk()
-                .expectBodyList(EmployerDto.class)
-                .isEqualTo(Objects.requireNonNull(employerDtoFlux.collectList().block()));
-    }
+    private final static String BASIC_PATH="/employers";
 
     @Test
     public void getCandidateByIdOkTestWithStatus200() {
 
         Long employerId = 1L;
-        EmployerDto employerDto = new EmployerDto("test", "test", "test@gmail.com");
-        when(employerService.getEmployer(employerId)).thenReturn(Mono.just(employerDto));
+        EmployerDto employerDto = EmployerDto.builder()
+                .email("test@gmail.com")
+                .build();
+
+        when(employerService.getEmployerById(employerId)).thenReturn(Mono.just(employerDto));
 
         webTestClient.get()
-                .uri("/employers/{id}", employerId)
+                .uri(BASIC_PATH+"/{id}", employerId)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
-                .expectStatus().isOk()
+                .expectStatus()
+                .isOk()
                 .expectBody(EmployerDto.class)
                 .isEqualTo(employerDto);
     }
@@ -72,15 +61,19 @@ class EmployerApiControllerITTests {
     @Test
     public void saveEmployerOkTestWithStatus200() {
 
-        EmployerDto employerDto = new EmployerDto("test", "test", "test@gmail.com");
+        EmployerDto employerDto = EmployerDto.builder()
+                .email("test@gmail.com")
+                .build();
+
         when(employerService.saveEmployer(any())).thenReturn(Mono.just(employerDto));
 
         webTestClient.post()
-                .uri("/employers")
+                .uri(BASIC_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(employerDto), EmployerDto.class)
                 .exchange()
-                .expectStatus().isOk()
+                .expectStatus()
+                .isCreated()
                 .expectBody(EmployerDto.class)
                 .isEqualTo(employerDto);
     }
@@ -89,15 +82,19 @@ class EmployerApiControllerITTests {
     public void updateEmployerOkTestWithStatus200() {
 
         Long employerId = 1L;
-        EmployerDto employerDto = new EmployerDto("test", "test", "test@gmail.com");
+        EmployerDto employerDto = EmployerDto.builder()
+                .email("test@gmail.com")
+                .build();
+
         when(employerService.updateEmployer(any(), eq(employerId))).thenReturn(Mono.just(employerDto));
 
         webTestClient.put()
-                .uri("/employers/update/{id}", employerId)
+                .uri(BASIC_PATH+"/update/{id}", employerId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Mono.just(employerDto), EmployerDto.class)
                 .exchange()
-                .expectStatus().isOk()
+                .expectStatus()
+                .isOk()
                 .expectBody(EmployerDto.class)
                 .isEqualTo(employerDto);
     }
@@ -106,12 +103,13 @@ class EmployerApiControllerITTests {
     public void deleteEmployerOkTestWithStatus200() {
 
         Long employerId = 1L;
-        when(employerService.deleteEmployer(employerId)).thenReturn(Mono.empty());
+        when(employerService.deleteEmployerById(employerId)).thenReturn(Mono.empty());
 
         webTestClient.delete()
-                .uri("/employers/delete/{id}", employerId)
+                .uri(BASIC_PATH+"/delete/{id}", employerId)
                 .exchange()
-                .expectStatus().isOk()
+                .expectStatus()
+                .isOk()
                 .expectBody(Void.class);
     }
 }
