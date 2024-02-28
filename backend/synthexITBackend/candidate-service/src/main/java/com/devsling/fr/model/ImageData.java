@@ -11,12 +11,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.relational.core.mapping.Column;
 
+import java.io.Serializable;
+import java.util.Date;
+
 @Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(schema = "images")
-public class ImageData {
+public class ImageData  implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +31,7 @@ public class ImageData {
     @Column("type")
     private String type;
 
-    @Lob
     @Column("imageData")
+    @Lob
     private byte[] imageData;
 }

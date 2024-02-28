@@ -1,14 +1,23 @@
 package com.devsling.fr.service;
 
 import com.devsling.fr.dto.CandidateDto;
+import com.devsling.fr.dto.CandidateProfileResponse;
+import com.devsling.fr.dto.UploadImageResponse;
+import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.io.IOException;
+
 public interface CandidateService {
-    Flux<CandidateDto> getCandidates();
-    Mono<CandidateDto> getCandidateById(Long id);
+    Flux<CandidateProfileResponse> getCandidates();
+    Mono<CandidateProfileResponse> getCandidateById(Long id);
     Mono<CandidateDto> saveCandidate(Mono<CandidateDto> candidateDtoMono);
     Mono<CandidateDto> updateCandidate(Mono<CandidateDto> candidateDtoMono, Long id);
     Mono<Void> deleteCandidateById(Long id);
-    Mono<CandidateDto> getCandidateByEmail(String email);
+    Mono<CandidateProfileResponse> getCandidateProfile(String email);
+
+    Mono<UploadImageResponse> uploadCandidateImage(MultipartFile file,Long candidateId) throws IOException;
+
+    Mono<byte[]> getProfileImage(String fileName);
 }

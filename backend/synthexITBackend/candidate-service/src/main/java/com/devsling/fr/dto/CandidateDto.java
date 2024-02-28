@@ -1,5 +1,6 @@
 package com.devsling.fr.dto;
 
+import com.devsling.fr.model.ImageData;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,4 +29,6 @@ public class CandidateDto {
     private String resumeUrl;
     @JsonProperty("professionalExperiences")
     private List<String> professionalExperiences;
+    @JsonProperty("imageName")
+    private String imageName;
 }

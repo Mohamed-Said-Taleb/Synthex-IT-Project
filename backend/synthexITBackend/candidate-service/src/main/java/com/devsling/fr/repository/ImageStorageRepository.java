@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
 @Repository
-public interface FileStorageRepository extends ReactiveCrudRepository<ImageData,Long> {
+public interface ImageStorageRepository extends ReactiveCrudRepository<ImageData,Long> {
     Mono<ImageData> findByName(String fileName);
 }
