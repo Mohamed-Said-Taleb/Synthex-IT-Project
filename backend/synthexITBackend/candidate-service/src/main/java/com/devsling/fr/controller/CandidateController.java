@@ -1,6 +1,8 @@
 package com.devsling.fr.controller;
 
 import com.devsling.fr.dto.CandidateDto;
+import com.devsling.fr.dto.CandidateProfileResponse;
+import com.devsling.fr.dto.UploadImageResponse;
 import com.devsling.fr.service.CandidateService;
 import com.devsling.fr.service.FileStorageService;
 import lombok.RequiredArgsConstructor;
@@ -28,18 +30,17 @@ import java.io.IOException;
 public class CandidateController {
 
     private final CandidateService candidateService;
-    private final FileStorageService fileStorageService;
 
 
     @GetMapping("/all")
-    public Flux<ResponseEntity<CandidateDto>> getCandidates() {
+    public Flux<ResponseEntity<CandidateProfileResponse>> getCandidates() {
         return candidateService.getCandidates()
                 .map(candidateDto -> ResponseEntity.status(HttpStatus.OK).body(candidateDto));
     }
 
 
     @GetMapping("/{id}")
-    public Mono<ResponseEntity<CandidateDto>> getCandidate(@PathVariable Long id) {
+    public Mono<ResponseEntity<CandidateProfileResponse>> getCandidateById(@PathVariable Long id) {
         return candidateService.getCandidateById(id)
                 .map(candidateDto -> ResponseEntity.status(HttpStatus.OK).body(candidateDto));
     }
@@ -62,26 +63,24 @@ public class CandidateController {
                 .thenReturn(ResponseEntity.status(HttpStatus.OK).build());
     }
     @PostMapping("/me")
-    public Mono<ResponseEntity<CandidateDto>> getCandidateByEmail(@RequestParam String email) {
-        return candidateService.getCandidateByEmail(email)
-                .map(candidateDto -> ResponseEntity.status(HttpStatus.OK).body(candidateDto));
+    public Mono<ResponseEntity<CandidateProfileResponse>> getProfileCandidate(@RequestParam String email) {
+        return candidateService.getCandidateProfile(email)
+                .map(candidateDto -> ResponseEntity.status(HttpStatus.OK)
+                        .body(candidateDto));
     }
 
-
-
-    @PostMapping("/upload")
-    public ResponseEntity<?> uploadImage(@RequestParam("image")MultipartFile file) throws IOException {
-        Mono<String> uploadImage = fileStorageService.uploadImage(file);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(uploadImage);
+    @PostMapping("/images/upload")
+    public Mono<ResponseEntity<UploadImageResponse>> uploadProfileImage(@RequestParam("image")MultipartFile file,
+                                                                 @RequestParam("candidateId") Long candidateId) throws IOException {
+      return candidateService.uploadCandidateImage(file,candidateId)
+        .map(uploadImageResponse -> ResponseEntity.status(HttpStatus.OK).body(uploadImageResponse));
     }
 
-    @GetMapping("/{fileName}")
-    public ResponseEntity<?> downloadImage(@PathVariable String fileName){
-        Mono<byte[]> imageData=fileStorageService.downloadImage(fileName);
-        return ResponseEntity.status(HttpStatus.OK)
-                .contentType(MediaType.valueOf("image/png"))
-                .body(imageData);
-
+    @GetMapping("/images/{fileName}")
+    public Mono<ResponseEntity<byte[]>> downloadProfileImage(@PathVariable String fileName) {
+        return candidateService.getProfileImage(fileName)
+                .map(imageData -> ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_PNG)
+                        .body(imageData));
     }
 }

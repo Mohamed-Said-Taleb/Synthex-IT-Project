@@ -68,13 +68,14 @@ public class JwtUtils {
                 .create()
                 .withSubject(SpringUser.getUsername())
                 .withArrayClaim("roles", roles.toArray(new String[0]))
-                .withExpiresAt(new Date(System.currentTimeMillis() + 2 * 60 * 60 * 1000))
+                .withExpiresAt(new Date(System.currentTimeMillis() + 2 * 60 * 60 * 1000))// 2 hours expiration
                 .sign(Algorithm.HMAC256(Constants.Secret));
+
         String jwtRefreshToken = JWT
                 .create()
                 .withSubject(SpringUser.getUsername())
                 .withArrayClaim("roles", roles.toArray(new String[0]))
-                .withExpiresAt(new Date(System.currentTimeMillis() +  2 * 60 * 60 * 1000))// use long duration
+                .withExpiresAt(new Date(System.currentTimeMillis() + 24 * 60 * 60 * 1000)) // 24 hours expiration
                 .sign(Algorithm.HMAC256(Constants.Secret));
 
         Map<String,String> idToken=new HashMap<>();

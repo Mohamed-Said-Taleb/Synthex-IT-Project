@@ -1,11 +1,13 @@
 package com.devsling.fr.tools;
 
+import org.springframework.stereotype.Component;
+
 import java.io.ByteArrayOutputStream;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
-
+@Component
 public class ImageUtils {
-    public static byte[] compressImage(byte[] data) {
+    public  byte[] compressImage(byte[] data) {
         Deflater deflater = new Deflater();
         deflater.setLevel(Deflater.BEST_COMPRESSION);
         deflater.setInput(data);
@@ -26,7 +28,7 @@ public class ImageUtils {
 
 
 
-    public static byte[] decompressImage(byte[] data) {
+    public  byte[] decompressImage(byte[] data) {
         Inflater inflater = new Inflater();
         inflater.setInput(data);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);

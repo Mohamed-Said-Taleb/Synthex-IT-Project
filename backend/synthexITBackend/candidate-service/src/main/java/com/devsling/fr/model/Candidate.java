@@ -5,6 +5,7 @@ import jakarta.persistence.ElementCollection;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -50,4 +51,8 @@ public class Candidate implements Serializable {
     @CollectionTable(name = "professional_experiences", joinColumns = @JoinColumn(name = "candidate_id"))
     @Column("experience")
     private List<String> professionalExperiences;
+
+    @OneToOne
+    @JoinColumn(name = "image_data_id", referencedColumnName = "id")
+    private String imageName;
 }
