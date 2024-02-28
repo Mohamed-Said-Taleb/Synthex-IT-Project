@@ -20,6 +20,9 @@ public class Employer  {
     @Column("id")
     private Long id;
 
+    @Column("company_name")
+    private String companyName;
+
     @Column("email")
     private String email;
 

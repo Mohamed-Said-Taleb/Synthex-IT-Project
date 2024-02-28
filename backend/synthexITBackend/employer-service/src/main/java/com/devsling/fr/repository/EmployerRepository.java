@@ -7,8 +7,5 @@ import reactor.core.publisher.Mono;
 
 @Repository
 public interface EmployerRepository extends ReactiveCrudRepository<Employer,Long> {
-
     Mono<Employer> findByEmail(String email);
-
-
 }

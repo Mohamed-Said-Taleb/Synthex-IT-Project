@@ -2,7 +2,9 @@ package com.devsling.fr.IntegrationTests;
 
 import com.devsling.fr.controller.CandidateController;
 import com.devsling.fr.dto.CandidateDto;
+import com.devsling.fr.exceptions.CandidateException;
 import com.devsling.fr.service.CandidateService;
+import com.devsling.fr.tools.Constants;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
@@ -38,7 +40,41 @@ class CandidateApiControllerITTests {
 
     private final static String BASIC_PATH="/candidates";
 
+    @Test
+    void getCandidates_NoCandidatesFound_ReturnsError() {
+        // Arrange
+        when(candidateService.getCandidates()).thenReturn(Flux.error(new CandidateException(Constants.NO_CANDIDATE_FOUND)));
 
+        // Act & Assert
+        webTestClient.get()
+                .uri(BASIC_PATH+"/all")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isNotFound();
+    }
+
+    @Test
+    void getCandidates_CandidatesFound_ReturnsCandidates() {
+
+        CandidateDto candidate1 =  CandidateDto.builder()
+                .email("test@gmail.com")
+                .build();
+        CandidateDto candidate2 = CandidateDto.builder()
+                .email("test@gmail.com")
+                .build();
+        when(candidateService.getCandidates()).thenReturn(Flux.just(candidate1, candidate2));
+
+        webTestClient.get()
+                .uri(BASIC_PATH+"/all")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBodyList(CandidateDto.class)
+                .hasSize(2)
+                .contains(candidate1, candidate2);
+    }
     @Test
     public void getCandidateByIdOkTestWithStatus200() {
 

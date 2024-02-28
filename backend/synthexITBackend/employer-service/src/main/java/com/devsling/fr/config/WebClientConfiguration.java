@@ -59,7 +59,8 @@ public class WebClientConfiguration {
                 .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
 
         requestFilters.forEach(builder::filter);
-     /**   builder.filter(WebClientRequestFilters.insertTracingHeaders());
+     /** when we call auth service
+      *  builder.filter(WebClientRequestFilters.insertTracingHeaders());
         builder.filter(WebClientLogFilter.logBackendRequestAndResponse(service));**/
         return builder;
     }

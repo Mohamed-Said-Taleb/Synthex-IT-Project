@@ -12,10 +12,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class EmployerDto {
 
-    @JsonProperty("firstName")
-    private String firstName;
-    @JsonProperty("lastName")
-    private String lastName;
+    @JsonProperty("company_name")
+    private String companyName;
+
     @JsonProperty("email")
     private String email;
+
+    @JsonProperty("sector")
+    private String sector;
+
+    @JsonProperty("address")
+    private String address;
+
+    @JsonProperty("phoneNumber")
+    private String phoneNumber;
 }

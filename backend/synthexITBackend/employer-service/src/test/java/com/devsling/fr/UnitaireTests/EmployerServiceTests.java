@@ -21,6 +21,8 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
@@ -41,60 +43,104 @@ public class EmployerServiceTests {
     }
 
     @Test
-    public void testGetEmployers() {
-        Employer employer1 = Employer.builder().email("test1@gmail.com").firstName("test1").lastName("test1").build();
-        Employer employer2  = Employer.builder().email("test2@gmail.com").firstName("test2").lastName("test2").build();
+    public void testGetEmployersReturn200_Ok() {
+
+        Employer employer1 = Employer.builder()
+                .email("test1@gmail.com")
+                .build();
+        Employer employer2  = Employer.builder()
+                .email("test2@gmail.com")
+                .build();
+
         when(employerRepository.findAll()).thenReturn(Flux.just(employer1, employer2));
+
         Flux<EmployerDto> result = employerService.getEmployer();
         Assertions.assertEquals(2, Objects.requireNonNull(result.collectList().block()).size());
     }
 
     @Test
-    public void testGetEmployer() {
+    public void testGetEmployerByIdReturn200_Ok() {
+
         Long id = 1L;
-        Employer employer = Employer.builder().email("test@gmail.com").firstName("test").lastName("test").build();
+        Employer employer = Employer.builder()
+                .email("test@gmail.com")
+                .build();
+
         when(employerRepository.findById(id)).thenReturn(Mono.just(employer));
-        Mono<EmployerDto> result = employerService.getEmployer(id);
-        Assertions.assertEquals("test", Objects.requireNonNull(result.block()).getFirstName());
+
+        Mono<EmployerDto> result = employerService.getEmployerById(id);
+        Assertions.assertEquals("test@gmail.com", Objects.requireNonNull(result.block()).getEmail());
     }
 
     @Test
-    public void testSaveEmployer() {
-        EmployerDto candidateDto = new EmployerDto("test", "test", "test@gmail.com");
-        Employer employer = Employer.builder().email("test@gmail.com").firstName("test").lastName("test").build();
+    public void testSaveEmployerReturn200_Ok() {
+
+        EmployerDto employerDto = EmployerDto.builder()
+                .email("test@gmail.com")
+                .build();
+
+        Employer employer = Employer.builder()
+                .email("test@gmail.com")
+                .build();
         when(employerRepository.save(any())).thenReturn(Mono.just(employer));
 
-        Mono<EmployerDto> result = employerService.saveEmployer(Mono.just(candidateDto));
-        Assertions.assertEquals("test", Objects.requireNonNull(result.block()).getFirstName());
+        Mono<EmployerDto> result = employerService.saveEmployer(Mono.just(employerDto));
+        Assertions.assertEquals("test@gmail.com", Objects.requireNonNull(result.block()).getEmail());
     }
 
     @Test
-    public void testUpdateEmployer() {
+    public void testUpdateEmployerReturn_200_Ok() {
+
         Long id = 1L;
-        EmployerDto candidateDto = new EmployerDto("updated", "updated", "updated@gmail.com");
-        Employer employer = Employer.builder().email("updated@gmail.com").firstName("updated").lastName("updated").build();
+        EmployerDto employerDto = EmployerDto.builder()
+                .email("test@gmail.com")
+                .build();
+
+        Employer employer = Employer.builder()
+                .email("test@gmail.com")
+                .build();
+
         when(employerRepository.findById(id)).thenReturn(Mono.just(employer));
         when(employerRepository.save(any())).thenReturn(Mono.just(employer));
 
-        Mono<EmployerDto> result = employerService.updateEmployer(Mono.just(candidateDto), id);
+        Mono<EmployerDto> result = employerService.updateEmployer(Mono.just(employerDto), id);
 
-        Assertions.assertEquals("updated", Objects.requireNonNull(result.block()).getFirstName());
+        Assertions.assertEquals("test@gmail.com", Objects.requireNonNull(result.block()).getEmail());
     }
 
+
     @Test
-    public void deleteEmployerReturnsEmptyMono() {
-        Long candidateId = 1L;
-        when(employerRepository.deleteById(candidateId)).thenReturn(Mono.empty());
-        Mono<Void> deleteMono = employerService.deleteEmployer(candidateId);
+    public void deleteEmployerById_Success() {
+        // Arrange
+        Long employerId = 1L;
+        when(employerRepository.deleteById(employerId)).thenReturn(Mono.empty());
+
+        // Act
+        Mono<Void> deleteMono = employerService.deleteEmployerById(employerId);
+
+        // Assert
         StepVerifier.create(deleteMono).verifyComplete();
+        verify(employerRepository, times(1)).deleteById(employerId);
     }
+    @Test
+    public void deleteEmployerById_Failure() {
+        Long employerId = 1L;
+        when(employerRepository.deleteById(employerId)).thenReturn(Mono.error(new RuntimeException("Delete failed")));
 
+        Mono<Void> deleteMono = employerService.deleteEmployerById(employerId);
+
+        StepVerifier.create(deleteMono)
+                .expectError(RuntimeException.class)
+                .verify();
+    }
     @Test
     public void testGetEmployerByEmail() {
         String email = "test@gmail.com";
-        Employer employer = Employer.builder().email("test@gmail.com").firstName("test").lastName("test").build();
+        Employer employer = Employer.builder()
+                .email("test@gmail.com")
+                .build();
         when(employerRepository.findByEmail(email)).thenReturn(Mono.just(employer));
         Mono<EmployerDto> result = employerService.getEmployerByEmail(email);
-        Assertions.assertEquals("test", Objects.requireNonNull(result.block()).getFirstName());
+        Assertions.assertEquals("test@gmail.com", Objects.requireNonNull(result.block()).getEmail());
     }
 }

@@ -2,8 +2,10 @@ package com.devsling.fr.controller;
 
 import com.devsling.fr.dto.CandidateDto;
 import com.devsling.fr.service.CandidateService;
+import com.devsling.fr.service.FileStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +18,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/candidates")
@@ -23,6 +28,7 @@ import reactor.core.publisher.Mono;
 public class CandidateController {
 
     private final CandidateService candidateService;
+    private final FileStorageService fileStorageService;
 
 
     @GetMapping("/all")
@@ -53,11 +59,29 @@ public class CandidateController {
     @DeleteMapping("/delete/{id}")
     public Mono<ResponseEntity<Object>> deleteCandidate(@PathVariable Long id) {
         return candidateService.deleteCandidateById(id)
-                .thenReturn(ResponseEntity.status(HttpStatus.NO_CONTENT).build());
+                .thenReturn(ResponseEntity.status(HttpStatus.OK).build());
     }
     @PostMapping("/me")
     public Mono<ResponseEntity<CandidateDto>> getCandidateByEmail(@RequestParam String email) {
         return candidateService.getCandidateByEmail(email)
                 .map(candidateDto -> ResponseEntity.status(HttpStatus.OK).body(candidateDto));
+    }
+
+
+
+    @PostMapping("/upload")
+    public ResponseEntity<?> uploadImage(@RequestParam("image")MultipartFile file) throws IOException {
+        Mono<String> uploadImage = fileStorageService.uploadImage(file);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(uploadImage);
+    }
+
+    @GetMapping("/{fileName}")
+    public ResponseEntity<?> downloadImage(@PathVariable String fileName){
+        Mono<byte[]> imageData=fileStorageService.downloadImage(fileName);
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(MediaType.valueOf("image/png"))
+                .body(imageData);
+
     }
 }

@@ -9,7 +9,7 @@ import java.util.Collections;
 
 @Configuration
 @ConfigurationProperties(prefix = "backend.employer")
-public class employerWebClientConfiguration extends WebClientConfiguration {
+public class EmployerWebClientConfiguration extends WebClientConfiguration {
     @Bean
     public WebClient employerWebClient(WebClient.Builder webClientBuilder) {
         return super.webClientBuilder("employer", webClientBuilder, Collections.emptyList()).build();
