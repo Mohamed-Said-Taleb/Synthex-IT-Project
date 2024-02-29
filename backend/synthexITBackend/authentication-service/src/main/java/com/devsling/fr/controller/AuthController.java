@@ -61,12 +61,7 @@ public class AuthController {
     @PostMapping("/validate-token")
     public Mono<ResponseEntity<GetTokenValidationResponse>> validateToken(@RequestParam("token") String token) {
         return authService.validateToken(token)
-                .map(tokenValidationResponse ->{
-                    if (tokenValidationResponse.getMessage().equals(Constants.INVALID_TOKEN)){
-                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(tokenValidationResponse);
-                    }
-                   return ResponseEntity.status(HttpStatus.OK).body(tokenValidationResponse);
-                } );
+                .map(tokenValidationResponse -> ResponseEntity.status(HttpStatus.OK).body(tokenValidationResponse));
     }
 
     @PostMapping("/password-request")

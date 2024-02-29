@@ -1,20 +1,22 @@
     package com.devsling.fr.filters;
 
-    import com.devsling.fr.exceptions.MissingAuthorizationHeaderException;
+    import com.devsling.fr.exceptions.AuthServiceException;
     import com.devsling.fr.service.AuthApiClient;
     import com.devsling.fr.tools.Constants;
     import org.springframework.cloud.gateway.filter.GatewayFilter;
     import org.springframework.cloud.gateway.filter.GatewayFilterChain;
     import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
     import org.springframework.http.HttpHeaders;
+    import org.springframework.http.HttpStatus;
     import org.springframework.http.server.reactive.ServerHttpRequest;
     import org.springframework.stereotype.Component;
     import org.springframework.web.reactive.function.client.WebClientRequestException;
     import org.springframework.web.server.ServerWebExchange;
     import reactor.core.publisher.Mono;
 
-    import javax.naming.AuthenticationException;
     import java.util.List;
+
+    import static com.devsling.fr.tools.Constants.MISSING_AUTHORIZATION_HEADER;
 
     @Component
     public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthenticationFilter.Config> {
@@ -34,7 +36,8 @@
                 if (validator.isSecured.test(exchange.getRequest())) {
                     String authHeader = getAuthHeader(exchange.getRequest());
                     if (isAuthMissing(authHeader)) {
-                        throw new MissingAuthorizationHeaderException();
+                        throw new AuthServiceException(Constants.AUTH_SERVICE_NAME
+                                , MISSING_AUTHORIZATION_HEADER, null, HttpStatus.BAD_REQUEST.value());
                     }
                     String finalAuthHeader = extractToken(authHeader);
                     return validateTokenAndFilter(exchange, chain, finalAuthHeader);
@@ -67,12 +70,17 @@
 
                         if (Constants.VALID_TOKEN.equals(status)) {
                             return chain.filter(exchange);
+                        } else if (Constants.INVALID_TOKEN.equals(status)) {
+                            return Mono.error(new AuthServiceException(Constants.AUTH_SERVICE_NAME
+                                    , Constants.NOT_AUTHORIZED, null, HttpStatus.FORBIDDEN.value()));
                         } else {
-                            return Mono.error(new AuthenticationException(Constants.NOT_AUTHORIZED));
+                            return Mono.error(new AuthServiceException(Constants.AUTH_SERVICE_NAME,
+                                    "Unexpected token validation status: " + status, null, HttpStatus.INTERNAL_SERVER_ERROR.value()));
                         }
                     })
                     .onErrorResume(WebClientRequestException.class, e -> Mono.error(new RuntimeException(Constants.ERROR, e)));
         }
+
 
         public static class Config {
         }

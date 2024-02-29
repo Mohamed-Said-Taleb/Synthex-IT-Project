@@ -4,7 +4,9 @@ import com.devsling.fr.dto.CandidateDto;
 import com.devsling.fr.dto.CandidateProfileResponse;
 import com.devsling.fr.model.Candidate;
 import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Component;
 
+@Component
 public class CandidateMapper {
     public static CandidateDto entityToDto(Candidate candidate) {
         CandidateDto candidateDto = new CandidateDto();

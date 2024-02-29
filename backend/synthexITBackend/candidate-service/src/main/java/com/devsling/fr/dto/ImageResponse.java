@@ -1,4 +1,4 @@
-package com.devsling.fr.tools;
+package com.devsling.fr.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -10,8 +10,9 @@ import lombok.NoArgsConstructor;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class ValidateTokenResponse {
-
+public class ImageResponse {
     @JsonProperty("message")
-    private String message;
+    private String message ;
+    @JsonProperty("imageData")
+    private byte[] imageData;
 }

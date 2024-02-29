@@ -2,6 +2,7 @@ package com.devsling.fr.service;
 
 import com.devsling.fr.dto.CandidateDto;
 import com.devsling.fr.dto.CandidateProfileResponse;
+import com.devsling.fr.dto.ImageResponse;
 import com.devsling.fr.dto.UploadImageResponse;
 import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
@@ -19,5 +20,5 @@ public interface CandidateService {
 
     Mono<UploadImageResponse> uploadCandidateImage(MultipartFile file,Long candidateId) throws IOException;
 
-    Mono<byte[]> getProfileImage(String fileName);
+    Mono<ImageResponse>  getProfileImage(String fileName);
 }

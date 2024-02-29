@@ -2,6 +2,7 @@ package com.devsling.fr.controller;
 
 import com.devsling.fr.dto.CandidateDto;
 import com.devsling.fr.dto.CandidateProfileResponse;
+import com.devsling.fr.dto.ImageResponse;
 import com.devsling.fr.dto.UploadImageResponse;
 import com.devsling.fr.service.CandidateService;
 import com.devsling.fr.service.FileStorageService;
@@ -30,12 +31,12 @@ import java.io.IOException;
 public class CandidateController {
 
     private final CandidateService candidateService;
+    private final FileStorageService fileStorageService;
 
 
     @GetMapping("/all")
-    public Flux<ResponseEntity<CandidateProfileResponse>> getCandidates() {
-        return candidateService.getCandidates()
-                .map(candidateDto -> ResponseEntity.status(HttpStatus.OK).body(candidateDto));
+    public Flux<CandidateProfileResponse> getCandidates() {
+        return candidateService.getCandidates();
     }
 
 
@@ -78,7 +79,7 @@ public class CandidateController {
 
     @GetMapping("/images/{fileName}")
     public Mono<ResponseEntity<byte[]>> downloadProfileImage(@PathVariable String fileName) {
-        return candidateService.getProfileImage(fileName)
+        return fileStorageService.downloadImage(fileName)
                 .map(imageData -> ResponseEntity.ok()
                         .contentType(MediaType.IMAGE_PNG)
                         .body(imageData));

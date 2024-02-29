@@ -22,8 +22,8 @@ public class Constants {
 
     public static final String IMAGE_UPLOAD_SUCCESSFULLY =  "Image uploaded successfully";
     public static final String UPLOAD_IMAGE_ERROR = "Error when uploading  image";
-    public static final String IMAGE_NOT_FOUND =  "Image not found: ";
-
+    public static final String IMAGE_NOT_FOUND =  "Image not found";
+    public static final String IMAGE_FOUND = "Image found";
     public static final String IMAGE_SIZE_ERROR =  "Image size exceeds the maximum allowed size";
 
 

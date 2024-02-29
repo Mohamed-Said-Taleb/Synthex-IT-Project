@@ -38,29 +38,40 @@ eureka:
 logging:
   pattern:
     level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}] %m%n"
-# Actuator Prometheus Endpoint
+# Actuator endpoints
 management:
-    endpoints:
-      web:
-        exposure:
-          include: "*"
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include: "*"
+  endpoint:
+    prometheus:
+      enabled: true
+    health:
+      show-details: always
+      enabled: true
+    info:
+      enabled: true
+  info:
+    git:
+      mode: full
+info:
+  app:
+    name: "SynthexIt"
+    description: "platforme de recrutement"
+    version: 1.0.0
+    contact:
+      name: MOHAMED SAID TALEB
+      email: mohamedsaidtaleb8@gmail.com
+    url_exclusions_logging: /metrics, /prometheus, /health, /v3/api-docs, /webjars
+
+
 backend:
   maxConnections: 600
   acquireTimeout: 1000
   auth:
     baseUrl: http://localhost:8083
-    connectTimeout: 3000
-    readTimeout: 3000
-    writeTimeout: 3000
-    responseTimeout: 3000
-  candidate:
-    baseUrl: http://localhost:8082
-    connectTimeout: 3000
-    readTimeout: 3000
-    writeTimeout: 3000
-    responseTimeout: 3000
-  employer:
-    baseUrl: http://localhost:8081
     connectTimeout: 3000
     readTimeout: 3000
     writeTimeout: 3000
