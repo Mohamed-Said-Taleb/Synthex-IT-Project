@@ -51,7 +51,6 @@ public class FileStorageServiceImpl implements FileStorageService {
     @Override
     public Mono<byte[]> downloadImage(String fileName) {
         return imageStorageRepository.findByName(fileName)
-                .map(dbImageData -> imageUtils.decompressImage(dbImageData.getImageData()))
-                .switchIfEmpty(Mono.error(new ImageNotFoundException(IMAGE_NOT_FOUND + fileName)));
+                .map(dbImageData -> imageUtils.decompressImage(dbImageData.getImageData()));
     }
 }

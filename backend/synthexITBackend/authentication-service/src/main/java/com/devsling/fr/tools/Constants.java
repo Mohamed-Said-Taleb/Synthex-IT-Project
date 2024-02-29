@@ -48,4 +48,5 @@ public class Constants {
     public static final String ENABLED_ACCOUNT="Your account is not enabled. Please verify your email.";
 
     public static final String PASSWORD_RESET_SUCCESSFUL="Password reset successful";
+    public static final String AUTHENTICATION_FAILURE="Authentication failure";
 }

@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @EqualsAndHashCode(callSuper = false)
-public class ImageUploadException extends BackendException{
+public class ImageUploadException extends AbstractException {
     public ImageUploadException(String message) {
         super(message);
     }

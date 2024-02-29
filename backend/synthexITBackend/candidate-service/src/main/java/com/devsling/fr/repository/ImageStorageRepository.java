@@ -8,4 +8,5 @@ import reactor.core.publisher.Mono;
 @Repository
 public interface ImageStorageRepository extends ReactiveCrudRepository<ImageData,Long> {
     Mono<ImageData> findByName(String fileName);
+    Mono<Void> deleteByName(String fileName);
 }

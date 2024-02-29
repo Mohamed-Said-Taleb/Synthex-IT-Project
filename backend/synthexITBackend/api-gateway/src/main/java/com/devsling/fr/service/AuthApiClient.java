@@ -1,6 +1,6 @@
 package com.devsling.fr.service;
 
-import com.devsling.fr.tools.ValidateTokenResponse;
+import com.devsling.fr.dto.ValidateTokenResponse;
 import reactor.core.publisher.Mono;
 
 public interface AuthApiClient {
