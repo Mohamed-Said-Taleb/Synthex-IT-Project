@@ -55,4 +55,5 @@ public class Candidate implements Serializable {
     @OneToOne
     @JoinColumn(name = "image_data_id", referencedColumnName = "id")
     private String imageName;
+
 }
