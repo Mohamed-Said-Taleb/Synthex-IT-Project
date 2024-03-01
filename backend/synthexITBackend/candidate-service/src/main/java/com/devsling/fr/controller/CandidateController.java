@@ -2,11 +2,13 @@ package com.devsling.fr.controller;
 
 import com.devsling.fr.dto.CandidateDto;
 import com.devsling.fr.dto.CandidateProfileResponse;
-import com.devsling.fr.dto.ImageResponse;
+import com.devsling.fr.dto.FileUploadResponse;
 import com.devsling.fr.dto.UploadImageResponse;
 import com.devsling.fr.service.CandidateService;
 import com.devsling.fr.service.FileStorageService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +21,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -83,5 +85,22 @@ public class CandidateController {
                 .map(imageData -> ResponseEntity.ok()
                         .contentType(MediaType.IMAGE_PNG)
                         .body(imageData));
+    }
+
+    @PostMapping("/uploadFile")
+    public Mono<ResponseEntity<FileUploadResponse>> uploadFile(@RequestParam("file") MultipartFile multipartFile,@RequestParam("candidateId") Long candidateId) throws IOException {
+      return candidateService.uploadCandidateCv(multipartFile,candidateId).map(fileUploadResponse -> ResponseEntity.ok()
+                .body(fileUploadResponse));
+    }
+    @GetMapping("/downloadFile/{fileCode}")
+    public Mono<ResponseEntity<Resource>> downloadFile(@PathVariable("fileCode") String fileCode) {
+        return fileStorageService.downloadFile(fileCode).map(resource -> {
+            String contentType = "application/octet-stream";
+            String headerValue = "attachment; filename=\"" + resource.getFilename() + "\"";
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, headerValue)
+                    .body(resource);
+        }).defaultIfEmpty(ResponseEntity.notFound().build());
     }
 }

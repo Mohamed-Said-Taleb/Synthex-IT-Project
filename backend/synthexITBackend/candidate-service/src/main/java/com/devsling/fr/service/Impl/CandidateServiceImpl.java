@@ -2,6 +2,7 @@ package com.devsling.fr.service.Impl;
 
 import com.devsling.fr.dto.CandidateDto;
 import com.devsling.fr.dto.CandidateProfileResponse;
+import com.devsling.fr.dto.FileUploadResponse;
 import com.devsling.fr.dto.ImageResponse;
 import com.devsling.fr.dto.UploadImageResponse;
 import com.devsling.fr.exceptions.CandidateException;
@@ -11,13 +12,16 @@ import com.devsling.fr.service.CandidateService;
 import com.devsling.fr.service.FileStorageService;
 import com.devsling.fr.tools.CandidateMapper;
 import com.devsling.fr.tools.Constants;
+import com.devsling.fr.tools.FileUploadUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import static com.devsling.fr.tools.Constants.IMAGE_FOUND;
 
@@ -28,6 +32,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final CandidateRepository candidateRepository;
     private final FileStorageService fileStorageService;
     private final ImageStorageRepository imageStorageRepository;
+    private final FileUploadUtils fileUploadUtils;
 
     @Override
     public Flux<CandidateProfileResponse> getCandidates() {
@@ -46,7 +51,7 @@ public class CandidateServiceImpl implements CandidateService {
     public Mono<CandidateProfileResponse> getCandidateById(Long id) {
         Mono<CandidateDto> candidateDtoMono = candidateRepository.findById(id)
                 .map(CandidateMapper::entityToDto)
-                .switchIfEmpty(Mono.error(new CandidateException(Constants.NO_CANDIDATE_WITH_EMAIL_FOUND)));
+                .switchIfEmpty(Mono.error(new CandidateException(Constants.NO_CANDIDATE_FOUND_WITH_ID_)));
 
         return candidateDtoMono.flatMap(candidateDto ->
                 getProfileImage(candidateDto.getImageName())
@@ -136,6 +141,40 @@ public class CandidateServiceImpl implements CandidateService {
                         .message(Constants.UPLOAD_IMAGE_ERROR)
                         .build()));
     }
+
+    @Override
+    public Mono<FileUploadResponse> uploadCandidateCv(MultipartFile file, Long candidateId) {
+        return candidateRepository.findById(candidateId)
+                .switchIfEmpty(Mono.error(new CandidateException(Constants.NO_CANDIDATE_FOUND_WITH_ID_ + candidateId)))
+                .flatMap(candidate -> {
+                    try {
+                        String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
+                        String fileCode = fileUploadUtils.saveFile(fileName, file);
+
+                        // Check if the candidate already has a file
+                        if (candidate.getResumeUrl() != null) {
+                            // Delete the existing file
+                            fileUploadUtils.deleteFile(candidate.getResumeUrl());
+                        }
+
+                        // Set the resumeUrl for the candidate to the new file
+                        candidate.setResumeUrl("/downloadFile/" + fileCode);
+
+                        // Save the candidate with the updated resumeUrl
+                        return candidateRepository.save(candidate)
+                                .then( Mono.just(FileUploadResponse.builder()
+                                        .fileName(fileName)
+                                        .size(file.getSize())
+                                        .downloadUri("/downloadFile/" + fileCode)
+                                        .build()));
+                    } catch (IOException e) {
+                        return Mono.error(new RuntimeException(e));
+                    }
+                });
+    }
+
+
+
     private CandidateProfileResponse createCandidateProfileResponse(ImageResponse imageResponse, CandidateDto candidateDto) {
         if (imageResponse != null && imageResponse.getMessage().equals(IMAGE_FOUND)) {
             return CandidateProfileResponse.builder()
