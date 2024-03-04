@@ -49,13 +49,12 @@ public class FileStorageServiceImpl implements FileStorageService {
                         .build())
                 .switchIfEmpty(Mono.error(new ImageUploadException(Constants.UPLOAD_IMAGE_ERROR)));
     }
-
-
     @Override
     public Mono<byte[]> downloadImage(String fileName) {
         return imageStorageRepository.findByName(fileName)
                 .map(dbImageData -> imageUtils.decompressImage(dbImageData.getImageData()));
     }
+
     @Override
     public Mono<FileUploadResponse> uploadFile(MultipartFile file) throws IOException {
         String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
@@ -63,17 +62,27 @@ public class FileStorageServiceImpl implements FileStorageService {
         return Mono.just(FileUploadResponse.builder()
                 .fileName(fileName)
                 .size(file.getSize())
-                .downloadUri("/downloadFile/" + fileCode)
+                .downloadUri(fileCode)
                 .build());
     }
 
-        @Override
-        public Mono<Resource> downloadFile(String fileCode) {
-            try {
-                Resource resource = fileUploadUtils.getFileAsResource(fileCode);
-                return Mono.justOrEmpty(resource);
-            } catch (IOException e) {
-                return Mono.error(e);
-            }
+    @Override
+    public Mono<Resource> downloadFile(String filename) {
+        try {
+            Resource resource = fileUploadUtils.getFileAsResource(filename);
+            return Mono.justOrEmpty(resource);
+        } catch (IOException e) {
+            return Mono.error(e);
+        }
+    }
+
+    @Override
+    public Mono<Void> deleteFile(String filename) {
+        try {
+            fileUploadUtils.deleteFile(filename);
+            return Mono.empty();
+        } catch (Exception e) {
+            return Mono.error(e);
+        }
     }
 }

@@ -1,4 +1,4 @@
-package com.devsling.fr.dto.Responses;
+package com.devsling.fr.dto.requests;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -10,10 +10,9 @@ import lombok.NoArgsConstructor;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetForgetPasswordResponse {
-    @JsonProperty("message")
-    private String message;
-
-    @JsonProperty("token")
-    private String token;
+public class LoginFormRequest {
+    @JsonProperty("username")
+    private String username;
+    @JsonProperty("password")
+    private String password;
 }

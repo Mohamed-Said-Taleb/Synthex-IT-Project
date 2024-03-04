@@ -1,7 +1,10 @@
 package com.devsling.fr.controller;
 
 import com.devsling.fr.dto.EmployerDto;
+import com.devsling.fr.dto.ValidationNumberRequestDto;
+import com.devsling.fr.dto.ValidationNumberResponseDto;
 import com.devsling.fr.service.EmployerService;
+import com.devsling.fr.service.TwilioOTPService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,13 +20,14 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+
 @RestController
 @RequestMapping("/employers")
 @RequiredArgsConstructor
 public class EmployerController {
 
     private final EmployerService employerService;
-
+    private final  TwilioOTPService twilioOTPService;
 
     @GetMapping("/all")
     public Flux<ResponseEntity<EmployerDto>>getEmployer(){
@@ -58,5 +62,15 @@ public class EmployerController {
     public Mono<ResponseEntity<EmployerDto>> getCandidateByEmail(@RequestParam String email) {
         return employerService.getEmployerByEmail(email)
                 .map(employerDto -> ResponseEntity.status(HttpStatus.OK).body(employerDto));
+    }
+
+    @PostMapping("/sendOTP")
+    public Mono<ValidationNumberResponseDto> sendOTP(@RequestBody ValidationNumberRequestDto requestBody) {
+        return twilioOTPService.sendOTPForValidationNumber(requestBody);
+    }
+
+    @PostMapping("/validateOTP")
+    public Mono<String> validateOTP(@RequestBody ValidationNumberRequestDto requestBody) {
+        return twilioOTPService.validateOTP(requestBody);
     }
 }

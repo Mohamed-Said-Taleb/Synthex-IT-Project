@@ -1,15 +1,15 @@
 package com.devsling.fr.service;
 
-import com.devsling.fr.dto.Requests.CandidateRequest;
-import com.devsling.fr.dto.Requests.EmployerCreateRequest;
-import com.devsling.fr.dto.Requests.LoginFormRequest;
-import com.devsling.fr.dto.Requests.SignUpFormRequest;
-import com.devsling.fr.dto.Responses.GetForgetPasswordResponse;
-import com.devsling.fr.dto.Responses.GetTokenResponse;
-import com.devsling.fr.dto.Responses.GetTokenValidationResponse;
-import com.devsling.fr.dto.Responses.ProfileResponse;
-import com.devsling.fr.dto.Responses.RegisterResponse;
-import com.devsling.fr.dto.Responses.VerificationResponse;
+import com.devsling.fr.dto.requests.CandidateRequest;
+import com.devsling.fr.dto.requests.EmployerCreateRequest;
+import com.devsling.fr.dto.requests.LoginFormRequest;
+import com.devsling.fr.dto.requests.SignUpFormRequest;
+import com.devsling.fr.dto.responses.GetForgetPasswordResponse;
+import com.devsling.fr.dto.responses.GetTokenResponse;
+import com.devsling.fr.dto.responses.GetTokenValidationResponse;
+import com.devsling.fr.dto.responses.ProfileResponse;
+import com.devsling.fr.dto.responses.RegisterResponse;
+import com.devsling.fr.dto.responses.VerificationResponse;
 import com.devsling.fr.entities.AppRole;
 import com.devsling.fr.entities.AppUser;
 import com.devsling.fr.entities.ForgetPasswordToken;
@@ -35,7 +35,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 import static com.devsling.fr.tools.Constants.ENABLED_ACCOUNT;
 
@@ -84,9 +83,8 @@ public class AuthServiceImpl implements AuthService {
                 if (appUserBd.getAppRoles().get(0).getRole().equals(RoleName.CANDIDATE.name())) {
                     CandidateRequest candidateRequest = CandidateRequest.builder()
                             .lastName(appUserBd.getLastName())
-                            .lastName(appUserBd.getFirstName())
+                            .firstName(appUserBd.getFirstName())
                             .email(appUserBd.getEmail())
-                            .firstName(signUpFormRequest.getFirstName())
                             .resumeUrl(signUpFormRequest.getResumeUrl())
                             .professionalExperiences(signUpFormRequest.getProfessionalExperiences())
                             .build();
@@ -130,7 +128,7 @@ public class AuthServiceImpl implements AuthService {
                                         .build());
                             })
                             .onErrorResume(throwable -> Mono.just(RegisterResponse.builder()
-                                    .message("Error creating candidate: " + throwable.getMessage())
+                                    .message("Error creating employer: " + throwable.getMessage())
                                     .build()));
                 } else {
                     return Mono.just(RegisterResponse.builder()

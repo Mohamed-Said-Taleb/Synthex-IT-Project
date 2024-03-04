@@ -1,12 +1,16 @@
 package com.devsling.fr.UnitaireTests;
 
 import com.devsling.fr.dto.CandidateDto;
+import com.devsling.fr.dto.CandidateProfileResponse;
 import com.devsling.fr.exceptions.CandidateException;
 import com.devsling.fr.model.Candidate;
 import com.devsling.fr.repository.CandidateRepository;
+import com.devsling.fr.repository.ImageStorageRepository;
 import com.devsling.fr.service.CandidateService;
+import com.devsling.fr.service.FileStorageService;
 import com.devsling.fr.service.Impl.CandidateServiceImpl;
 import com.devsling.fr.tools.Constants;
+import com.devsling.fr.tools.FileUploadUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,13 +37,20 @@ public class CandidateServiceTests {
     public CandidateService candidateService;
     @Mock
     CandidateRepository candidateRepository;
+    @Mock
+     FileStorageService fileStorageService;
+    @Mock
+    ImageStorageRepository imageStorageRepository;
+
+    @Mock
+    FileUploadUtils fileUploadUtils;
     @MockBean
     protected Clock clock;
 
     @BeforeEach
     public void setup() {
 
-        candidateService = new CandidateServiceImpl(candidateRepository);
+        candidateService = new CandidateServiceImpl(candidateRepository,fileStorageService,imageStorageRepository,fileUploadUtils);
         MockHelper.fixClock(clock, LocalDate.of(2100, 12, 31));
     }
 
@@ -47,20 +58,36 @@ public class CandidateServiceTests {
 
     @Test
     public void testGetCandidates() {
-        Candidate candidate1 = Candidate.builder().email("test1@gmail.com").firstName("test1").lastName("test1").build();
-        Candidate candidate2 = candidate2 = Candidate.builder().email("test2@gmail.com").firstName("test2").lastName("test2").build();
+        Candidate candidate1 = Candidate.builder()
+                .email("test1@gmail.com")
+                .firstName("test1")
+                .lastName("test1")
+                .build();
+
+        Candidate candidate2 = candidate2 = Candidate.builder()
+                .email("test2@gmail.com")
+                .firstName("test2")
+                .lastName("test2")
+                .build();
+
         when(candidateRepository.findAll()).thenReturn(Flux.just(candidate1, candidate2));
-        Flux<CandidateDto> result = candidateService.getCandidates();
+        Flux<CandidateProfileResponse> result = candidateService.getCandidates();
         Assertions.assertEquals(2, Objects.requireNonNull(result.collectList().block()).size());
     }
 
     @Test
     public void testGetCandidateById() {
+
         Long id = 1L;
-        Candidate candidate = Candidate.builder().email("test@gmail.com").firstName("test").lastName("test").build();
+        Candidate candidate = Candidate.builder()
+                .email("test@gmail.com")
+                .firstName("test")
+                .lastName("test")
+                .build();
+
         when(candidateRepository.findById(id)).thenReturn(Mono.just(candidate));
-        Mono<CandidateDto> result = candidateService.getCandidateById(id);
-        Assertions.assertEquals("test", Objects.requireNonNull(result.block()).getFirstName());
+        Mono<CandidateProfileResponse> result = candidateService.getCandidateById(id);
+        Assertions.assertEquals("test", Objects.requireNonNull(result.block()).getCandidateDto().getFirstName());
     }
 
     @Test
@@ -106,14 +133,13 @@ public class CandidateServiceTests {
         String email = "test@gmail.com";
         Candidate candidate = Candidate.builder().email("test@gmail.com").firstName("test").lastName("test").build();
         when(candidateRepository.findByEmail(email)).thenReturn(Mono.just(candidate));
-        Mono<CandidateDto> result = candidateService.getCandidateByEmail(email);
-        Assertions.assertEquals("test", Objects.requireNonNull(result.block()).getFirstName());
+        Mono<CandidateProfileResponse> result = candidateService.getCandidateProfile(email);
+        Assertions.assertEquals("test", Objects.requireNonNull(result.block()).getCandidateDto().getFirstName());
     }
     @Test
     void deleteCandidateById_CandidateNotFound_ThrowsException() {
         CandidateRepository candidateRepository = Mockito.mock(CandidateRepository.class);
         Mockito.when(candidateRepository.findById(Mockito.anyLong())).thenReturn(Mono.empty());
-        CandidateServiceImpl candidateService = new CandidateServiceImpl(candidateRepository);
 
         StepVerifier.create(candidateService.deleteCandidateById(1L))
                 .expectErrorMatches(throwable -> throwable instanceof CandidateException &&

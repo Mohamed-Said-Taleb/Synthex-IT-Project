@@ -1,6 +1,5 @@
-package com.devsling.fr.dto.Responses;
+package com.devsling.fr.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterResponse {
-    @JsonProperty("message")
-    private String message;
+public class ValidationNumberRequestDto {
+    private String phoneNumber;//destination
+    private String userName;
+    private String oneTimePassword;
 }

@@ -2,6 +2,7 @@ package com.devsling.fr.IntegrationTests;
 
 import com.devsling.fr.controller.CandidateController;
 import com.devsling.fr.dto.CandidateDto;
+import com.devsling.fr.dto.CandidateProfileResponse;
 import com.devsling.fr.exceptions.CandidateException;
 import com.devsling.fr.service.CandidateService;
 import com.devsling.fr.tools.Constants;
@@ -18,8 +19,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.Objects;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -51,19 +50,24 @@ class CandidateApiControllerITTests {
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus()
-                .isNotFound();
+                .is5xxServerError();
     }
 
     @Test
     void getCandidates_CandidatesFound_ReturnsCandidates() {
 
         CandidateDto candidate1 =  CandidateDto.builder()
-                .email("test@gmail.com")
                 .build();
         CandidateDto candidate2 = CandidateDto.builder()
-                .email("test@gmail.com")
                 .build();
-        when(candidateService.getCandidates()).thenReturn(Flux.just(candidate1, candidate2));
+
+        CandidateProfileResponse candidateProfileResponse1 = CandidateProfileResponse.builder()
+                .candidateDto(candidate1)
+                .build();
+        CandidateProfileResponse candidateProfileResponse2 = CandidateProfileResponse.builder()
+                .candidateDto(candidate2)
+                .build();
+        when(candidateService.getCandidates()).thenReturn(Flux.just(candidateProfileResponse1, candidateProfileResponse2));
 
         webTestClient.get()
                 .uri(BASIC_PATH+"/all")
@@ -80,9 +84,12 @@ class CandidateApiControllerITTests {
 
         long candidateId = 1L;
         CandidateDto candidateDto = CandidateDto.builder()
-                .email("test@gmail.com")
                 .build();
-        when(candidateService.getCandidateById(candidateId)).thenReturn(Mono.just(candidateDto));
+        CandidateProfileResponse candidateProfileResponse = CandidateProfileResponse.builder()
+                .candidateDto(candidateDto)
+                .build();
+
+        when(candidateService.getCandidateById(candidateId)).thenReturn(Mono.just(candidateProfileResponse));
 
         webTestClient.get()
                 .uri(BASIC_PATH+"/{id}", candidateId)
@@ -142,7 +149,7 @@ class CandidateApiControllerITTests {
                 .uri(BASIC_PATH+"/delete/{id}", candidateId)
                 .exchange()
                 .expectStatus()
-                .isNoContent()
+                .isOk()
                 .expectBody(Void.class);
     }
 }

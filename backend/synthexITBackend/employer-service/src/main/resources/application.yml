@@ -1,3 +1,4 @@
+# Global Configuration
 server:
   port: 8081
 spring:
@@ -10,14 +11,46 @@ spring:
         password: mypassword
   jpa:
         hibernate:
-          ddl-auto: create
+          ddl-auto: update
   sql:
         init:
           continue-on-error: true
+info:
+  app:
+    name: employer-service
+    version: 1.0.0
+# Management Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+      base-path: /
+  info:
+    git:
+      mode: full
+  endpoint:
+    prometheus:
+      enabled: 'true'
+    health:
+      show-details: always
+      enabled: 'true'
+    info:
+      enabled: 'true'
+
+# Twilo configuration
+twilio:
+  account_sid: AC4740****************
+  auth_token: af2359*****************
+  trial_number: +185*****************
+
+# Discovery Service Configuration
 eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
+
+# Backend Configuration
 backend:
   maxConnections: 600
   acquireTimeout: 1000

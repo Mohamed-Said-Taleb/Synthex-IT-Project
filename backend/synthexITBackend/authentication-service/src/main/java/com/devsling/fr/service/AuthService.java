@@ -1,14 +1,13 @@
 package com.devsling.fr.service;
 
-import com.devsling.fr.dto.Requests.LoginFormRequest;
-import com.devsling.fr.dto.Requests.SignUpFormRequest;
-import com.devsling.fr.dto.Responses.CandidateProfileResponse;
-import com.devsling.fr.dto.Responses.GetForgetPasswordResponse;
-import com.devsling.fr.dto.Responses.GetTokenResponse;
-import com.devsling.fr.dto.Responses.GetTokenValidationResponse;
-import com.devsling.fr.dto.Responses.ProfileResponse;
-import com.devsling.fr.dto.Responses.RegisterResponse;
-import com.devsling.fr.dto.Responses.VerificationResponse;
+import com.devsling.fr.dto.requests.LoginFormRequest;
+import com.devsling.fr.dto.requests.SignUpFormRequest;
+import com.devsling.fr.dto.responses.GetForgetPasswordResponse;
+import com.devsling.fr.dto.responses.GetTokenResponse;
+import com.devsling.fr.dto.responses.GetTokenValidationResponse;
+import com.devsling.fr.dto.responses.ProfileResponse;
+import com.devsling.fr.dto.responses.RegisterResponse;
+import com.devsling.fr.dto.responses.VerificationResponse;
 import jakarta.mail.MessagingException;
 import reactor.core.publisher.Mono;
 

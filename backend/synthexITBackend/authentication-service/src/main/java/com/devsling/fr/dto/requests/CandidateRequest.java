@@ -1,4 +1,4 @@
-package com.devsling.fr.dto.Requests;
+package com.devsling.fr.dto.requests;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -12,28 +12,15 @@ import java.util.List;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class SignUpFormRequest {
-
+public class CandidateRequest {
+    @JsonProperty("id")
+    Long id;
     @JsonProperty("firstName")
     private String firstName;
-
     @JsonProperty("lastName")
     private String lastName;
-
-    @JsonProperty("username")
-    private String username;
-
-    @JsonProperty("password")
-    private String password;
-
     @JsonProperty("email")
     private String email;
-
-    @JsonProperty("gender")
-    private String gender;
-
-    @JsonProperty("role")
-    private String role_Name;
     @JsonProperty("skills")
     private List<String> skills;
     @JsonProperty("resumeUrl")
