@@ -13,4 +13,5 @@ public interface  FileStorageService {
     Mono<byte[]> downloadImage(String fileName);
      Mono<FileUploadResponse> uploadFile(MultipartFile file) throws IOException;
     Mono<Resource> downloadFile(String fileCode);
+    Mono<Void> deleteFile(String filename);
 }

@@ -1,4 +1,4 @@
-package com.devsling.fr.dto.Responses;
+package com.devsling.fr.dto.responses;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

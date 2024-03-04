@@ -1,9 +1,9 @@
 package com.devsling.fr.service.helper;
 
-import com.devsling.fr.dto.Requests.LoginFormRequest;
-import com.devsling.fr.dto.Requests.SignUpFormRequest;
-import com.devsling.fr.dto.Responses.GetForgetPasswordResponse;
-import com.devsling.fr.dto.Responses.RegisterResponse;
+import com.devsling.fr.dto.requests.LoginFormRequest;
+import com.devsling.fr.dto.requests.SignUpFormRequest;
+import com.devsling.fr.dto.responses.GetForgetPasswordResponse;
+import com.devsling.fr.dto.responses.RegisterResponse;
 import com.devsling.fr.entities.AppUser;
 import com.devsling.fr.entities.ForgetPasswordToken;
 import com.devsling.fr.repository.MailSenderRepository;

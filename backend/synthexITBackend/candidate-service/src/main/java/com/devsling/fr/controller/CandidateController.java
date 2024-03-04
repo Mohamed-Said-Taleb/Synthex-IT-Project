@@ -3,9 +3,9 @@ package com.devsling.fr.controller;
 import com.devsling.fr.dto.CandidateDto;
 import com.devsling.fr.dto.CandidateProfileResponse;
 import com.devsling.fr.dto.FileUploadResponse;
+import com.devsling.fr.dto.ImageResponse;
 import com.devsling.fr.dto.UploadImageResponse;
 import com.devsling.fr.service.CandidateService;
-import com.devsling.fr.service.FileStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -33,27 +33,22 @@ import java.io.IOException;
 public class CandidateController {
 
     private final CandidateService candidateService;
-    private final FileStorageService fileStorageService;
 
 
     @GetMapping("/all")
     public Flux<CandidateProfileResponse> getCandidates() {
         return candidateService.getCandidates();
     }
-
-
     @GetMapping("/{id}")
     public Mono<ResponseEntity<CandidateProfileResponse>> getCandidateById(@PathVariable Long id) {
         return candidateService.getCandidateById(id)
                 .map(candidateDto -> ResponseEntity.status(HttpStatus.OK).body(candidateDto));
     }
-
     @PostMapping
     public Mono<ResponseEntity<CandidateDto>> saveCandidate(@RequestBody CandidateDto candidateDto) {
         return candidateService.saveCandidate(Mono.just(candidateDto))
                 .map(savedCandidateDto -> ResponseEntity.status(HttpStatus.CREATED).body(savedCandidateDto));
     }
-
     @PutMapping("/update/{id}")
     public Mono<ResponseEntity<CandidateDto>> updateCandidate(@RequestBody CandidateDto candidateDto, @PathVariable Long id) {
         return candidateService.updateCandidate(Mono.just(candidateDto), id)
@@ -78,23 +73,22 @@ public class CandidateController {
       return candidateService.uploadCandidateImage(file,candidateId)
         .map(uploadImageResponse -> ResponseEntity.status(HttpStatus.OK).body(uploadImageResponse));
     }
-
     @GetMapping("/images/{fileName}")
-    public Mono<ResponseEntity<byte[]>> downloadProfileImage(@PathVariable String fileName) {
-        return fileStorageService.downloadImage(fileName)
+    public Mono<ResponseEntity<ImageResponse>> downloadProfileImage(@PathVariable String fileName) {
+        return candidateService.getProfileImage(fileName)
                 .map(imageData -> ResponseEntity.ok()
                         .contentType(MediaType.IMAGE_PNG)
                         .body(imageData));
     }
 
-    @PostMapping("/uploadFile")
+    @PostMapping("/files/upload")
     public Mono<ResponseEntity<FileUploadResponse>> uploadFile(@RequestParam("file") MultipartFile multipartFile,@RequestParam("candidateId") Long candidateId) throws IOException {
-      return candidateService.uploadCandidateCv(multipartFile,candidateId).map(fileUploadResponse -> ResponseEntity.ok()
+      return candidateService.uploadCandidateResume(multipartFile,candidateId).map(fileUploadResponse -> ResponseEntity.ok()
                 .body(fileUploadResponse));
     }
-    @GetMapping("/downloadFile/{fileCode}")
-    public Mono<ResponseEntity<Resource>> downloadFile(@PathVariable("fileCode") String fileCode) {
-        return fileStorageService.downloadFile(fileCode).map(resource -> {
+    @GetMapping("/files/download")
+    public Mono<ResponseEntity<Resource>> downloadFile(@RequestParam("filename") String fileName) {
+        return candidateService.downloadFile(fileName).map(resource -> {
             String contentType = "application/octet-stream";
             String headerValue = "attachment; filename=\"" + resource.getFilename() + "\"";
             return ResponseEntity.ok()
@@ -102,5 +96,10 @@ public class CandidateController {
                     .header(HttpHeaders.CONTENT_DISPOSITION, headerValue)
                     .body(resource);
         }).defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+    @DeleteMapping("/files/delete/{id}")
+    public Mono<ResponseEntity<Resource>> deleteFile(@PathVariable Long id,@RequestParam("filename") String fileName) {
+        return candidateService.deleteResume(fileName,id)
+                .thenReturn(ResponseEntity.status(HttpStatus.OK).build());
     }
 }

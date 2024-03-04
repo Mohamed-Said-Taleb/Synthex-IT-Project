@@ -1,7 +1,13 @@
 package com.devsling.fr.model;
 
+import com.devsling.fr.dto.CurrentSituation;
+import com.devsling.fr.dto.ExperienceLevel;
+import com.devsling.fr.dto.JobAvailability;
+import com.devsling.fr.dto.SalaryRange;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.ElementCollection;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.JoinColumn;
@@ -51,6 +57,29 @@ public class Candidate implements Serializable {
     @CollectionTable(name = "professional_experiences", joinColumns = @JoinColumn(name = "candidate_id"))
     @Column("experience")
     private List<String> professionalExperiences;
+
+    @Column("current_position")
+    @Enumerated(EnumType.STRING)
+    private CurrentSituation currentPosition;
+
+    @Column("job_availability")
+    private JobAvailability jobAvailability;
+
+    @Column("experience_level")
+    @Enumerated(EnumType.STRING)
+    private ExperienceLevel experienceLevel;
+
+    @Column("qualification_level")
+    private String qualificationLevel;
+
+    @Column("industry_sector")
+    private List<String> industrySector;
+
+    @Column("salary")
+    @Enumerated(EnumType.STRING)
+    private SalaryRange salary;
+
+    private boolean disabledWorker;
 
     @OneToOne
     @JoinColumn(name = "image_data_id", referencedColumnName = "id")

@@ -47,13 +47,24 @@ public class EmployerServiceImpl implements EmployerService {
     @Override
     public Mono<EmployerDto> updateEmployer(Mono<EmployerDto> employerDtoMono, Long id){
         return employerRepository.findById(id)
-                .flatMap(p->employerDtoMono.map(EmployerMapper::dtoToEntity)
-                        .doOnNext(e->e.setId(id)))
+                .flatMap(existingEmployer -> employerDtoMono.map(updatedEmployerDto -> {
+                    if (updatedEmployerDto.getCompanyName() != null) {
+                        existingEmployer.setCompanyName(updatedEmployerDto.getCompanyName());
+                    }
+                    if (updatedEmployerDto.getSector() != null) {
+                        existingEmployer.setCompanyName(updatedEmployerDto.getSector());
+                    }
+                    if (updatedEmployerDto.getAddress() != null) {
+                        existingEmployer.setCompanyName(updatedEmployerDto.getAddress());
+                    }
+                    if (updatedEmployerDto.getPhoneNumber() != null) {
+                        existingEmployer.setCompanyName(updatedEmployerDto.getPhoneNumber());
+                    }
+                    return existingEmployer;
+                }))
                 .flatMap(employerRepository::save)
                 .map(EmployerMapper::entityToDto)
                 .switchIfEmpty(Mono.error(new EmployerException(Constants.UPDATE_EMPLOYER_ERROR_MESSAGE)));
-
-
     }
     @Override
     public Mono<Void> deleteEmployerById(Long id){

@@ -1,6 +1,6 @@
 package com.devsling.fr.service.out;
 
-import com.devsling.fr.dto.Requests.EmployerCreateRequest;
+import com.devsling.fr.dto.requests.EmployerCreateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;

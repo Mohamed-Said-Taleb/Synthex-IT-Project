@@ -1,15 +1,12 @@
 package com.devsling.fr.service.out;
 
-import com.devsling.fr.dto.Requests.CandidateRequest;
-import com.devsling.fr.dto.Responses.CandidateProfileResponse;
-import com.devsling.fr.tools.Constants;
+import com.devsling.fr.dto.requests.CandidateRequest;
+import com.devsling.fr.dto.responses.CandidateProfileResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-
-import static com.devsling.fr.tools.Constants.AUTHORISATION;
 
 @Component
 @RequiredArgsConstructor

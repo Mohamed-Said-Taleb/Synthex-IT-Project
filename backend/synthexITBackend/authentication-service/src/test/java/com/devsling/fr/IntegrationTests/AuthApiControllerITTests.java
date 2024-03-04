@@ -1,10 +1,10 @@
 package com.devsling.fr.IntegrationTests;
 
 import com.devsling.fr.controller.AuthController;
-import com.devsling.fr.dto.Requests.LoginFormRequest;
-import com.devsling.fr.dto.Requests.SignUpFormRequest;
-import com.devsling.fr.dto.Responses.GetTokenResponse;
-import com.devsling.fr.dto.Responses.RegisterResponse;
+import com.devsling.fr.dto.requests.LoginFormRequest;
+import com.devsling.fr.dto.requests.SignUpFormRequest;
+import com.devsling.fr.dto.responses.GetTokenResponse;
+import com.devsling.fr.dto.responses.RegisterResponse;
 import com.devsling.fr.service.AuthService;
 import com.devsling.fr.tools.Constants;
 import com.devsling.fr.tools.RoleName;
@@ -15,7 +15,6 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
